@@ -1,4 +1,5 @@
-﻿using ShipDock.ECS;
+﻿using ShipDock.Datas;
+using ShipDock.ECS;
 using ShipDock.Notices;
 using ShipDock.Server;
 using ShipDock.Testers;
@@ -43,6 +44,16 @@ namespace ShipDock.Applications
         public static T GetServer<T>(this string serverName) where T : IServer 
         {
             return ShipDockApp.Instance.Servers.GetServer<T>(serverName);
+        }
+
+        public static void AddToWarehouse(this IData target)
+        {
+            ShipDockApp.Instance.Datas.AddData(target);
+        }
+
+        public static IData GetData(this int target)
+        {
+            return ShipDockApp.Instance.Datas.GetData(target);
         }
     }
 
@@ -90,6 +101,7 @@ namespace ShipDock.Applications
             Notificater = new Notifications<int>();
             Servers = new Servers();
             Servers.OnInit += OnCreateComponentManager;
+            Datas = new DataWarehouse();
 
             if (ticks > 0)
             {
@@ -165,5 +177,6 @@ namespace ShipDock.Applications
         public Notifications<int> Notificater { get; private set; }
         public ShipDockComponentManager Components { get; private set; }
         public Servers Servers { get; private set; }
+        public DataWarehouse Datas { get; private set; }
     }
 }
