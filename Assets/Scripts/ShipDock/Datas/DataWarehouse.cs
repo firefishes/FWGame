@@ -42,9 +42,9 @@ namespace ShipDock.Datas
             mDataMapper.Remove(name);
         }
 
-        public IData GetData(int dataName)
+        public T GetData<T>(int dataName) where T : IData
         {
-            return ((mDataMapper == default) && mDataMapper.IsContainsKey(dataName)) ? mDataMapper[dataName] : default;
+            return ((mDataMapper != default) && mDataMapper.IsContainsKey(dataName)) ? (T)mDataMapper[dataName] : default;
         }
     }
 

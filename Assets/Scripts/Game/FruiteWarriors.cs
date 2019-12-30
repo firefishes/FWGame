@@ -27,6 +27,7 @@ namespace FWGame
             servers.OnInit += OnServersInit;
             servers.AddOnServerFinished(OnFinished);
             servers.Add(new FWServer());
+            servers.Add(new FWDataServer());
             servers.Add(new FWComponentServer());
         }
 
@@ -36,18 +37,23 @@ namespace FWGame
 
             IResolvableConfig[] configs = {
                 new ResolvableConfigItem<INotice, Notice>("Notice"),
-                new ResolvableConfigItem<INotice, GameNotice>("GameNotice")
+                new ResolvableConfigItem<INotice, GameNotice>("GameNotice"),
+                new ResolvableConfigItem<IParamNotice<IFWRole>, CampRoleNotice>("CampRoleCreated")
             };
             app.Servers.AddResolvableConfig(configs);
         }
 
         private void OnFinished()
         {
+            #region 测试服务容器
             FWServer server = FWConsts.SERVER_FW.GetServer<FWServer>();
             INotice notice = server.Resolve<INotice>("Notice") as INotice;
             Debug.Log(notice.Name);
             notice = server.Resolve<INotice>("GameNotice") as INotice;
             Debug.Log(notice.Name);
+            #endregion
+
+
         }
 
         private void OnDestroy()

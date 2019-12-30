@@ -5,13 +5,13 @@ namespace ShipDock.Datas
 {
     public class Data : IData
     {
-        private List<IDataHandler> mDataHandlers;
+        private List<IDataExtracter> mDataHandlers;
         private Action<IData, int> mOnDataChanged;
 
         public Data(int dataName)
         {
             DataName = dataName;
-            mDataHandlers = new List<IDataHandler>();
+            mDataHandlers = new List<IDataExtracter>();
         }
 
         public void DataChanged(params int[] keys)
@@ -25,7 +25,7 @@ namespace ShipDock.Datas
             }
         }
 
-        public void Register(IDataHandler dataHandler)
+        public void Register(IDataExtracter dataHandler)
         {
             if((dataHandler == default) || mDataHandlers.Contains(dataHandler))
             {
@@ -35,7 +35,7 @@ namespace ShipDock.Datas
             mOnDataChanged += dataHandler.OnDataChanged;
         }
 
-        public void Unregister(IDataHandler dataHandler)
+        public void Unregister(IDataExtracter dataHandler)
         {
             if((dataHandler == default) || !mDataHandlers.Contains(dataHandler))
             {

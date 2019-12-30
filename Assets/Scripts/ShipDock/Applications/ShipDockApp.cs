@@ -51,9 +51,9 @@ namespace ShipDock.Applications
             ShipDockApp.Instance.Datas.AddData(target);
         }
 
-        public static IData GetData(this int target)
+        public static T GetData<T>(this int target) where T : IData
         {
-            return ShipDockApp.Instance.Datas.GetData(target);
+            return ShipDockApp.Instance.Datas.GetData<T>(target);
         }
     }
 

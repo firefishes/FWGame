@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using ShipDock.Applications;
 using ShipDock.ECS;
+using ShipDock.Notices;
 using ShipDock.Tools;
 
 namespace FWGame
 {
     public class RoleCampComponent : ShipDockComponent
     {
+        private FWDataServer mDataServer;
         private IFWRole mRoleTarget;
         private IFWRole mRoleEntitas;
         private List<int> mAllRoles;
@@ -17,6 +20,7 @@ namespace FWGame
 
             mAllRoles = new List<int>();
             mCampRoles = new KeyValueList<int, List<int>>();
+            mDataServer = FWConsts.SERVER_FW_DATAS.GetServer<FWDataServer>();
         }
 
         public override int SetEntitas(IShipDockEntitas target)
@@ -41,6 +45,9 @@ namespace FWGame
                 {
                     mAllRoles.Add(id);
                 }
+                //IParamNotice<IFWRole> notice = mDataServer.Resolve<IParamNotice<IFWRole>>("CampRoleCreated");
+                //notice.ParamValue = role;
+                mDataServer.Delive<IParamNotice<IFWRole>>("AddCampRole", "CampRoleCreated");
             }
             return id;
         }

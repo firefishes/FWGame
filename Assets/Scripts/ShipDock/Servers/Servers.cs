@@ -9,7 +9,7 @@ namespace ShipDock.Server
 {
     public class Servers : IDispose, IServersHolder
     {
-        private static Type resolvableAttrType = typeof(ResolvableAttribute);
+        private static readonly Type resolvableAttrType = typeof(ResolvableAttribute);
 
         private bool mCanCheckServers;
         private Type mInitPriorType;
@@ -330,7 +330,7 @@ namespace ShipDock.Server
             }
         }
 
-        public IResolvable[] SetResolvable<InterfaceT>(ResolveDelgate<InterfaceT> target, out int statu)
+        public IResolvable[] SetResolvable<InterfaceT>(ResolveDelegate<InterfaceT> target, out int statu)
         {
             statu = 0;
 
@@ -399,7 +399,7 @@ namespace ShipDock.Server
             return result;
         }
 
-        private int CheckAndFillResolvable<InterfaceT>(ref ResolvableBinder resolvableRef, out IResolvable resolvable, ResolveDelgate<InterfaceT> defaultResolver)
+        private int CheckAndFillResolvable<InterfaceT>(ref ResolvableBinder resolvableRef, out IResolvable resolvable, ResolveDelegate<InterfaceT> defaultResolver)
         {
             int result = (mBinderIDs == default) || (mResolvablesMapper == default) ? 1 : 0;
             int binderID = mBinderIDs.GetID(ref resolvableRef);
@@ -436,12 +436,12 @@ namespace ShipDock.Server
             return result;
         }
 
-        public IResolvable GetResolvable(ref string resolvableName, out int errorResult)
+        public IResolvable GetResolvable(ref string alias, out int errorResult)
         {
             errorResult = 0;
             ResolvableInfo info;
             IResolvable result = default;
-            int id = mResolvableNameMapper.ToID(ref resolvableName);
+            int id = mResolvableNameMapper.ToID(ref alias);
             if (mResolvableConfigs.IsContainsKey(id))
             {
                 IResolvableConfig item = mResolvableConfigs[id];

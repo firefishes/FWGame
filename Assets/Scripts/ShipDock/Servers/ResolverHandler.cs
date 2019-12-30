@@ -13,7 +13,7 @@
             DelegateTarget = default;
         }
 
-        public void SetDelegate(ResolveDelgate<InterfaceT> target)
+        public void SetDelegate(ResolveDelegate<InterfaceT> target)
         {
             DelegateTarget = target;
         }
@@ -30,7 +30,7 @@
             ResolverParam = param;
         }
 
-        public ResolveDelgate<InterfaceT> DelegateTarget { get; private set; }
+        public ResolveDelegate<InterfaceT> DelegateTarget { get; private set; }
         public object ResolverParam { get; set; }
     }
 

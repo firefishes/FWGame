@@ -2,7 +2,7 @@
 {
     public interface IResolverCacher<InterfaceT>
     {
-        void SetDelegate(ResolveDelgate<InterfaceT> target);
-        ResolveDelgate<InterfaceT> DelegateTarget { get; }
+        void SetDelegate(ResolveDelegate<InterfaceT> target);
+        ResolveDelegate<InterfaceT> DelegateTarget { get; }
     }
 }

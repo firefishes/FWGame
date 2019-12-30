@@ -1,11 +1,15 @@
 ﻿using ShipDock.Pooling;
+using System;
+using System.Reflection;
 
 namespace ShipDock.Server
 {
-    public delegate void ResolveDelgate<T>(ref T target);
+    public delegate void ResolveDelegate<T>(ref T target);
 
     public class Server : IServer
     {
+        private static readonly Type callableAttrType = typeof(CallableAttribute);
+
         public Server(string serverName = "")
         {
             if(!string.IsNullOrEmpty(ServerName))
@@ -32,7 +36,37 @@ namespace ShipDock.Server
         {
         }
 
-        public int Register<InterfaceT>(ResolveDelgate<InterfaceT> target, params IPoolBase[] factory)
+        public InterfaceT Delive<InterfaceT>(string resolverName, string alias)
+        {
+            return Resolve<InterfaceT>(alias, resolverName);
+        }
+        
+        public void Add<InterfaceT>(ResolveDelegate<InterfaceT> target)
+        {
+            int statu = 0;
+
+            MethodInfo method = target.Method;
+            object[] attributes = method.GetCustomAttributes(callableAttrType, false);
+
+            int max = attributes.Length;
+            string resolverName, alias;
+            CallableAttribute attribute;
+            IResolvable resolvable;
+            for (int i = 0; i < max; i++)
+            {
+                attribute = attributes[i] as CallableAttribute;
+                resolverName = attribute.ResolverName;
+                resolverName = string.IsNullOrEmpty(resolverName) ? method.Name : resolverName;
+                alias = attribute.Alias;
+                resolvable = ServersHolder.GetResolvable(ref alias, out int resultError);
+                if (resultError == 0)
+                {
+                    resolvable.SetResolver(resolverName, target, out statu);
+                }
+            }
+        }
+
+        public int Register<InterfaceT>(ResolveDelegate<InterfaceT> target, params IPoolBase[] factory)
         {
             IResolvable[] list = ServersHolder.SetResolvable(target, out int statu);
             int max = list != default ? list.Length : 0;

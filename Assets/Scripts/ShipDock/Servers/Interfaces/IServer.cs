@@ -9,9 +9,11 @@ namespace ShipDock.Server
         void InitServer();
         void ServerReady();
         void SetServerHolder(IServersHolder servers);
-        int Register<InterfaceT>(ResolveDelgate<InterfaceT> target, params IPoolBase[] factory);
+        int Register<InterfaceT>(ResolveDelegate<InterfaceT> target, params IPoolBase[] factory);
         void Unregister<InterfaceT>(string alias);
         InterfaceT Resolve<InterfaceT>(string alias,  string resolverName = "");
+        void Add<InterfaceT>(ResolveDelegate<InterfaceT> target);
+        InterfaceT Delive<InterfaceT>(string resolverName, string alias);
         IServersHolder ServersHolder { get; }
         int Prioriity { get; set; }
         string ServerName { get; }

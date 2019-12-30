@@ -14,4 +14,15 @@ namespace ShipDock.Server
         
         public string Alias { get; private set; }
     }
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    public class CallableAttribute : ResolvableAttribute
+    {
+        public CallableAttribute(string resolverName, string alias) : base(alias)
+        {
+            ResolverName = resolverName;
+        }
+
+        public string ResolverName { get; private set; }
+    }
 }

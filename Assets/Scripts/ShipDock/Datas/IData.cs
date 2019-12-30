@@ -7,7 +7,7 @@ namespace ShipDock.Datas
         int DataName { get; }
     }
 
-    public interface IDataHandler
+    public interface IDataExtracter
     {
         void OnDataChanged(IData data, int keyName);
     }
