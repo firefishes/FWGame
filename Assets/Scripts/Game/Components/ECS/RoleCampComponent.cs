@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ShipDock.Applications;
 using ShipDock.ECS;
 using ShipDock.Notices;
@@ -28,8 +29,8 @@ namespace FWGame
             int id = base.SetEntitas(target);
             if(id >= 0)
             {
-                IFWRole role = target as IFWRole;
-                int campID = role.Camp;
+                RoleCreated = target as IFWRole;
+                int campID = RoleCreated.Camp;
                 List<int> list;
                 if (mCampRoles.IsContainsKey(campID))
                 {
@@ -48,6 +49,7 @@ namespace FWGame
                 //IParamNotice<IFWRole> notice = mDataServer.Resolve<IParamNotice<IFWRole>>("CampRoleCreated");
                 //notice.ParamValue = role;
                 mDataServer.Delive<IParamNotice<IFWRole>>("AddCampRole", "CampRoleCreated");
+                RoleCreated = default;
             }
             return id;
         }
@@ -101,6 +103,8 @@ namespace FWGame
             //    mRoleEntitas.SetPahterTarget(mRoleTarget.Position);
             //}
         }
+
+        public IFWRole RoleCreated { get; private set; }
     }
 
 }

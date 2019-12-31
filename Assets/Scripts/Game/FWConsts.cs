@@ -18,6 +18,8 @@ namespace FWGame
         public const int COMPONENT_ROLE_INPUT = 6;
         public const int COMPONENT_ROLE_CONTROLLABLE = 7;
 
+        public const int NOTICE_GET_ROLE_WHEN_CREATE = 1000;
+
         public const int DATA_GAME = 1;
     }
 }

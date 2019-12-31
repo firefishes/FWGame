@@ -13,6 +13,9 @@ namespace FWGame
 {
     public class FWDataServer : Server
     {
+        private FWGameData mGameData;
+        private RoleCampComponent mRoleCampComponent;
+
         public FWDataServer()
         {
             ServerName = FWConsts.SERVER_FW_DATAS;
@@ -33,8 +36,7 @@ namespace FWGame
         [Resolvable("CampRoleCreated")]
         private void CampRoleCreated(ref IParamNotice<IFWRole> target)
         {
-            //IParamNotice<IFWRole> notice = target as IParamNotice<IFWRole>;
-            //IFWRole role = notice.ParamValue;
+            target.ParamValue = mRoleCampComponent.RoleCreated;
         }
 
         public override void ServerReady()
@@ -42,13 +44,19 @@ namespace FWGame
             base.ServerReady();
 
             Add<IParamNotice<IFWRole>>(AddCampRole);
+
+            mGameData = ShipDockApp.AppInstance.Datas.GetData<FWGameData>(FWConsts.DATA_GAME);
+
+            ShipDockApp app = ShipDockApp.AppInstance;
+            var components = app.Components;
+            mRoleCampComponent = components.GetComponentByAID(FWConsts.COMPONENT_ROLE_CAMP) as RoleCampComponent;
         }
 
         [Callable("AddCampRole", "CampRoleCreated")]
         private void AddCampRole(ref IParamNotice<IFWRole> target)
         {
-            FWGameData data = ShipDockApp.AppInstance.Datas.GetData<FWGameData>(FWConsts.DATA_GAME);
-            data.AddCampRole(target.ParamValue);
+            Debug.Log(target.ParamValue);
+            mGameData.AddCampRole(target.ParamValue);
         }
     }
 
