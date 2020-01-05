@@ -1,24 +1,33 @@
 ﻿using ShipDock.Applications;
 using ShipDock.Datas;
+using ShipDock.ECS;
 using ShipDock.Notices;
 using ShipDock.Pooling;
 using ShipDock.Server;
 using ShipDock.Tools;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace FWGame
 {
     public class FWDataServer : Server
     {
-        private FWGameData mGameData;
-        private RoleCampComponent mRoleCampComponent;
+        private ServerComponentDataRelater mRelater;
 
         public FWDataServer()
         {
             ServerName = FWConsts.SERVER_FW_DATAS;
+            mRelater = new ServerComponentDataRelater
+            {
+                DataNames = new int[]
+            {
+                FWConsts.DATA_GAME
+            },
+                ComponentNames = new int[]
+            {
+                FWConsts.COMPONENT_ROLE_CAMP
+            }
+            };
+
         }
 
         public override void InitServer()
@@ -30,66 +39,81 @@ namespace FWGame
             datas.AddData(new FWGameData());
 
             Register<IParamNotice<IFWRole>>(CampRoleCreated, Pooling<CampRoleNotice>.Instance);
-            
-        }
-        
-        [Resolvable("CampRoleCreated")]
-        private void CampRoleCreated(ref IParamNotice<IFWRole> target)
-        {
-            target.ParamValue = mRoleCampComponent.RoleCreated;
+
         }
 
         public override void ServerReady()
         {
             base.ServerReady();
+            
+            mRelater.CommitCache();
 
             Add<IParamNotice<IFWRole>>(AddCampRole);
-
-            mGameData = ShipDockApp.AppInstance.Datas.GetData<FWGameData>(FWConsts.DATA_GAME);
-
-            ShipDockApp app = ShipDockApp.AppInstance;
-            var components = app.Components;
-            mRoleCampComponent = components.GetComponentByAID(FWConsts.COMPONENT_ROLE_CAMP) as RoleCampComponent;
+        }
+        
+        [Resolvable("CampRoleCreated")]
+        private void CampRoleCreated(ref IParamNotice<IFWRole> target)
+        {
+            var component = mRelater.ComponentRef<RoleCampComponent>(FWConsts.COMPONENT_ROLE_CAMP);
+            target.ParamValue = component.RoleCreated;
         }
 
         [Callable("AddCampRole", "CampRoleCreated")]
         private void AddCampRole(ref IParamNotice<IFWRole> target)
         {
             Debug.Log(target.ParamValue);
-            mGameData.AddCampRole(target.ParamValue);
+            var data = mRelater.DataRef<FWGameData>(FWConsts.DATA_GAME);
+            data.AddCampRole(target.ParamValue);
         }
     }
 
-    public class FWGameData : Data
+    public class ServerComponentDataRelater
     {
-        private KeyValueList<int, CampRoleModel> mCampRoleMapper;
+        private KeyValueList<int, IData> mDataCached;
+        private KeyValueList<int, IShipDockComponent> mCompCached;
 
-        public FWGameData() : base(FWConsts.DATA_GAME)
+        public void CommitCache()
         {
-            mCampRoleMapper = new KeyValueList<int, CampRoleModel>();
-        }
-
-        public void AddCampRole(IFWRole role)
-        {
-            int key = mCampRoleMapper.Size;
-            CampRoleModel model = new CampRoleModel
+            if (mCompCached == default)
             {
-                role = role,
-                controllIndex = key
-            };
-            mCampRoleMapper[key] = model;
+                mCompCached = new KeyValueList<int, IShipDockComponent>();
+            }
+            if(mDataCached == default)
+            {
+                mDataCached = new KeyValueList<int, IData>();
+            }
+            ShipDockApp app = ShipDockApp.AppInstance;
+            int max = ComponentNames.Length;
+            int name;
+            var components = app.Components;
+            for (int i = 0; i < max; i++)
+            {
+                name = ComponentNames[i];
+                mCompCached[name] = components.GetComponentByAID(name);
+            }
+            max = DataNames.Length;
+            if (max > 0)
+            {
+                var datas = app.Datas;
+                for (int i = 0; i < max; i++)
+                {
+                    name = DataNames[i];
+                    mDataCached[name] = datas.GetData<IData>(name);
+                }
+            }
         }
+
+        public T ComponentRef<T>(int componentName) where T : IShipDockComponent
+        {
+            return mCompCached != default ? (T)mCompCached[componentName] : default;
+        }
+
+        public T DataRef<T>(int dataName) where T : IData
+        {
+            return mDataCached != default ? (T)mDataCached[dataName] : default;
+        }
+
+        public int[] DataNames { get; set; }
+        public int[] ComponentNames { get; set; }
     }
-
-    public class CampRoleModel
-    {
-        public int controllIndex;
-        public IFWRole role;
-    }
-
-    public class CampRoleNotice : ParamNotice<IFWRole>
-    {
-
-    }
-
 }

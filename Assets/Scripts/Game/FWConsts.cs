@@ -21,5 +21,7 @@ namespace FWGame
         public const int NOTICE_GET_ROLE_WHEN_CREATE = 1000;
 
         public const int DATA_GAME = 1;
+
+        public const int DC_CAMP_ROLE_CREATED = 2000;
     }
 }
