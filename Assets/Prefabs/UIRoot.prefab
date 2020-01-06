@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6532199061091325503}
   - component: {fileID: 8976732739232926415}
+  - component: {fileID: 7789656692063315180}
   m_Layer: 0
   m_Name: UIRoot
   m_TagString: Untagged
@@ -75,6 +76,25 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &7789656692063315180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3301687934142776484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a867515cbec7732479c932db97cc6fdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UICamera: {fileID: 8976732739232926415}
+  m_MainCanvas: {fileID: 8495998237422655543}
+  m_OnAwaked:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ShipDock.UI.UIRoot+OnUIRootAwaked, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &4856215875102154114
 GameObject:
   m_ObjectHideFlags: 0

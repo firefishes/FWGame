@@ -64,6 +64,33 @@ namespace ShipDock.Tools
             }
         }
 
+        public static void Reclaim<T>(ref Stack<T> target, bool isSetNull = true, bool isDisposeItems = false)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            if (isDisposeItems)
+            {
+                T item;
+                IDispose dp;
+                int max = target.Count;
+                while (target.Count > 0)
+                {
+                    item = target.Peek();
+                    dp = item as IDispose;
+                    Reclaim(dp);
+                }
+            }
+            target.Clear();
+
+            if (isSetNull)
+            {
+                target = null;
+            }
+        }
+
         public static void Reclaim<K, V>(ref KeyValueList<K, V> target, bool isSetNull = true, bool isDisposeItems = false)
         {
             if (target == null)

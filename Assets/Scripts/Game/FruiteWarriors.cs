@@ -5,6 +5,7 @@ using ShipDock.Applications;
 using ShipDock.Notices;
 using ShipDock.Server;
 using ShipDock.Testers;
+using ShipDock.UI;
 using UnityEngine;
 
 namespace FWGame
@@ -14,6 +15,11 @@ namespace FWGame
         void Start()
         {
             ShipDockApp.StartUp(120, OnShipDockStart);
+        }
+
+        public void UIRootAwaked(IUIRoot root)
+        {
+            ShipDockApp.Instance.InitUIRoot(root);
         }
 
         private void OnShipDockStart()

@@ -1,62 +1,15 @@
 ﻿using ShipDock.Datas;
 using ShipDock.ECS;
+using ShipDock.Loader;
 using ShipDock.Notices;
 using ShipDock.Server;
 using ShipDock.Testers;
 using ShipDock.Tools;
+using ShipDock.UI;
 using System;
 
 namespace ShipDock.Applications
 {
-    public static class ShipDockAppExtension
-    {
-        public static void Add(this int target, Action<INoticeBase<int>> handler)
-        {
-            ShipDockApp.Instance.Notificater?.Add(target, handler);
-        }
-
-        public static void Add(this INotificationSender target, Action<INoticeBase<int>> handler)
-        {
-            ShipDockApp.Instance.Notificater?.Add(target, handler);
-        }
-
-        public static void Remove(this int target, Action<INoticeBase<int>> handler)
-        {
-            ShipDockApp.Instance.Notificater?.Remove(target, handler);
-        }
-
-        public static void Remove(this INotificationSender target, Action<INoticeBase<int>> handler)
-        {
-            ShipDockApp.Instance.Notificater?.Remove(target, handler);
-        }
-
-        public static void Dispatch(this int noticeName, INoticeBase<int> notice = default)
-        {
-            if(notice == default)
-            {
-                notice = new Notice();
-            }
-            notice.SetNoticeName(noticeName);
-            ShipDockApp.Instance.Notificater?.SendNotice(notice);
-            notice.Dispose();
-        }
-
-        public static T GetServer<T>(this string serverName) where T : IServer 
-        {
-            return ShipDockApp.Instance.Servers.GetServer<T>(serverName);
-        }
-
-        public static void AddToWarehouse(this IData target)
-        {
-            ShipDockApp.Instance.Datas.AddData(target);
-        }
-
-        public static T GetData<T>(this int target) where T : IData
-        {
-            return ShipDockApp.Instance.Datas.GetData<T>(target);
-        }
-    }
-
     public class ShipDockApp : Singletons<ShipDockApp>
     {
 
@@ -70,7 +23,7 @@ namespace ShipDock.Applications
 
         public static void StartUp(int ticks, Action onStartUp = default)
         {
-            if(onStartUp != default)
+            if (onStartUp != default)
             {
                 Instance.AddStart(onStartUp);
             }
@@ -87,18 +40,20 @@ namespace ShipDock.Applications
             Instance.Clean();
         }
 
+        private int mFrameSign;
         private Action mAppStarted;
 
         public void Start(int ticks)
         {
             Tester.Instance.Log(TesterBaseApp.LOG, IsStarted, "warning: ShipDockApplication has started");
-            
+
             if (IsStarted)
             {
                 return;
             }
 
             Notificater = new Notifications<int>();
+            ABs = new AssetBundles();
             Servers = new Servers();
             Servers.OnInit += OnCreateComponentManager;
             Datas = new DataWarehouse();
@@ -129,16 +84,15 @@ namespace ShipDock.Applications
             notice.Dispose();
         }
 
-        private int mFrameSign;
         private void ComponentUpdateByTicks(int time)
         {
             Components.UpdateComponentUnit(ComponentUnitUpdate);
-            if(mFrameSign > 0)
+            if (mFrameSign > 0)
             {
                 Components.FreeComponentUnit(ComponentUnitUpdate);
             }
             mFrameSign++;
-            if(mFrameSign > 1)
+            if (mFrameSign > 1)
             {
                 mFrameSign = 0;
             }
@@ -172,11 +126,22 @@ namespace ShipDock.Applications
             }
         }
 
+        public void InitUIRoot(IUIRoot root)
+        {
+            if (UIs == default)
+            {
+                UIs = new UIManager();
+                UIs.SetRoot(root);
+            }
+        }
+
         public bool IsStarted { get; private set; }
+        public UIManager UIs { get; private set; }
         public TicksUpdater TicksUpdater { get; private set; }
         public Notifications<int> Notificater { get; private set; }
         public ShipDockComponentManager Components { get; private set; }
         public Servers Servers { get; private set; }
         public DataWarehouse Datas { get; private set; }
+        public AssetBundles ABs { get; private set; }
     }
 }
