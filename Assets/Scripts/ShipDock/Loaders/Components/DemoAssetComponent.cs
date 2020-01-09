@@ -1,22 +1,21 @@
 ﻿
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ShipDock.Loader
 {
     public class DemoAssetComponent : MonoBehaviour
     {
-        public bool valid = true;
-        public string ABName;
-        public string subAssetName;
-        public GameObject asset;
-        public Texture2D tex2D;
-        public Sprite sprite;
-        public AudioClip audioClip;
-        public TextAsset textData;
+        [SerializeField]
+        private bool m_Valid;
+        [SerializeField]
+        private string m_ABName;
+        [SerializeField]
+        private List<DemoAsset> m_Assets;
 
         private void Awake()
         {
-            if(!valid)
+            if(!m_Valid)
             {
                 return;
             }
@@ -24,34 +23,12 @@ namespace ShipDock.Loader
             comp.Add(this);
         }
 
-        public T GetAsset<T>() where T : Object
+        public List<DemoAsset> Assets
         {
-            T result = default(T);
-            if (typeof(T) == typeof(GameObject))
+            get
             {
-                result = asset as T;
+                return m_Assets;
             }
-            else if (typeof(T) == typeof(Texture2D))
-            {
-                result = tex2D as T;
-            }
-            else if (typeof(T) == typeof(AudioClip))
-            {
-                result = audioClip as T;
-            }
-            else if (typeof(T) == typeof(Sprite))
-            {
-                result = sprite as T;
-            }
-            else if(typeof(T) == typeof(TextAsset))
-            {
-                result = textData as T;
-            }
-            else
-            {
-                //Tester.Instance.Log(TesterAssets.Instance, TesterAssets.LOG17, subAssetName);
-            }
-            return result;
         }
     }
 

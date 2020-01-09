@@ -31,7 +31,7 @@ namespace ShipDock.Loader
 
         private void OnAppReady()
         {
-
+            ShipDockApp.AppInstance.ABs.
         }
     }
 

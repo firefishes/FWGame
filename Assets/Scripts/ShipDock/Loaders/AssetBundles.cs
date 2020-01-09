@@ -8,8 +8,8 @@ namespace ShipDock.Loader
     {
         public const string ASSET_BUNDLE_MANIFEST = "AssetBundleManifest";
 
-        private KeyValueList<string, AssetBundleManifest> mABManifests;
         private KeyValueList<string, IAssetBundleInfo> mCaches;
+        private KeyValueList<string, AssetBundleManifest> mABManifests;
 
         public AssetBundles()
         {
