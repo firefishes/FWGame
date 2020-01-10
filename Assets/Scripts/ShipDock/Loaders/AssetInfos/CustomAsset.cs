@@ -5,9 +5,9 @@ using UnityEngine;
 namespace ShipDock.Loader
 {
     [Serializable]
-    public class DemoAsset
+    public class CustomAsset
     {
-        public string subAssetName;
+        public string assetName;
         public GameObject asset;
         public Texture2D tex2D;
         public Sprite sprite;

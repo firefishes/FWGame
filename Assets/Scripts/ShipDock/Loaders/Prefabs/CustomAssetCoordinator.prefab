@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5370940935946104846}
   - component: {fileID: 1342560148203386453}
   m_Layer: 0
-  m_Name: DemoAssetCoordinator
+  m_Name: CustomAssetCoordinator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

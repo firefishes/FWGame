@@ -8,6 +8,7 @@ namespace ShipDock.Loader
     {
         public const string ASSET_BUNDLE_MANIFEST = "AssetBundleManifest";
 
+        private CustomAssetBundle mCustomAssets;
         private KeyValueList<string, IAssetBundleInfo> mCaches;
         private KeyValueList<string, AssetBundleManifest> mABManifests;
 
@@ -23,15 +24,20 @@ namespace ShipDock.Loader
             Utils.Reclaim(ref mABManifests, false, true);
         }
 
+        public void SetCustomBundles(ref CustomAssetBundle value)
+        {
+            mCustomAssets = value;
+        }
+
         public bool HasBundel(string name)
         {
-            return mCaches != default && mCaches.ContainsKey(name);
+            return (mCaches != default) && mCaches.ContainsKey(name);
         }
 
         public T Get<T>(string name, string path) where T : Object
         {
-            T result = default;
-            if(HasBundel(name))
+            T result = (mCustomAssets != default) ? mCustomAssets.GetCustomAsset<T>(name, path) : default;
+            if((result == default) && HasBundel(name))
             {
                 IAssetBundleInfo assetBundleInfo = mCaches[name];
                 result = assetBundleInfo.GetAsset<T>(path);
@@ -41,8 +47,8 @@ namespace ShipDock.Loader
 
         public GameObject Get(string name, string path)
         {
-            GameObject result = default;
-            if (HasBundel(name))
+            GameObject result = (mCustomAssets != default) ? mCustomAssets.GetCustomAsset<GameObject>(name, path) : default;
+            if ((result == default) && HasBundel(name))
             {
                 IAssetBundleInfo assetBundleInfo = mCaches[name];
                 result = assetBundleInfo.GetAsset(path);

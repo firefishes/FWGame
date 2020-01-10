@@ -5,8 +5,8 @@ namespace ShipDock.Loader
 {
     public interface IAssetBundleInfo : IDispose
     {
-        GameObject GetAsset(string path);
         T GetAsset<T>(string path) where T : Object;
+        GameObject GetAsset(string path);
         AssetBundle Asset { get; }
         string Name { get; }
     }
