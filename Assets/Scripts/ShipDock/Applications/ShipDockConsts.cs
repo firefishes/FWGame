@@ -13,5 +13,6 @@ namespace ShipDock.Applications
         public const int NOTICE_FRAME_UPDATER_COMP_READY = -1004;
         public const int NOTICE_ADD_SCENE_UPDATE = -1005;
         public const int NOTICE_REMOVE_SCENE_UPDATE = -1006;
+        public const int NOTICE_SCENE_UPDATE_READY = -1007;
     }
 }

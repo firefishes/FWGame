@@ -3,33 +3,30 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace ShipDock.Tools
+static public class ShipDockExtension
 {
-    static public class ShipDockExtension
+
+    private static StringBuilder mBuilder;
+
+    public static string Append(this string target, params string[] args)
     {
-
-        private static StringBuilder mBuilder;
-
-        public static string Append(this string target, params string[] args)
+        if (mBuilder == null)
         {
-            if (mBuilder == null)
-            {
-                mBuilder = new StringBuilder();
-            }
-            mBuilder.Length = 0;
-            mBuilder.Append(target);
-
-            int max = args.Length;
-            for (int i = 0; i < max; i++)
-            {
-                mBuilder.Append(args[i]);
-            }
-            return mBuilder.ToString();
+            mBuilder = new StringBuilder();
         }
+        mBuilder.Length = 0;
+        mBuilder.Append(target);
 
-        public static bool IsEmpty(this string target)
+        int max = args.Length;
+        for (int i = 0; i < max; i++)
         {
-            return string.IsNullOrEmpty(target);
+            mBuilder.Append(args[i]);
         }
+        return mBuilder.ToString();
+    }
+
+    public static bool IsEmpty(this string target)
+    {
+        return string.IsNullOrEmpty(target);
     }
 }

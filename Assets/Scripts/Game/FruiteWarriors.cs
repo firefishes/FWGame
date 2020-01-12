@@ -1,7 +1,9 @@
 ﻿
 #define G_LOG
 
+using System;
 using ShipDock.Applications;
+using ShipDock.Loader;
 using ShipDock.Notices;
 using ShipDock.Server;
 using ShipDock.Testers;
@@ -28,13 +30,42 @@ namespace FWGame
             Tester.Instance.Init();
             Tester.Instance.Log(FWTester.LOG0, "ShipDock start up..");
 
+            ShipDockConsts.NOTICE_SCENE_UPDATE_READY.Add(OnSceneUpdateReady);
+
             ShipDockApp app = ShipDockApp.Instance;
+            app.AddStart(OnAppStarted);
+
             Servers servers = app.Servers;
             servers.OnInit += OnServersInit;
-            servers.AddOnServerFinished(OnFinished);
             servers.Add(new FWServer());
             servers.Add(new FWDataServer());
             servers.Add(new FWComponentServer());
+            servers.AddOnServerFinished(OnFinished);
+        }
+
+        private void OnAppStarted()
+        {
+        }
+
+        private void OnSceneUpdateReady(INoticeBase<int> obj)
+        {
+            updater = new MethodUpdater();
+            updater.Update += CheckServerInited;
+            UpdaterNotice.AddSceneUpdater(updater);
+        }
+
+        private MethodUpdater updater;
+
+        private void CheckServerInited(int obj)
+        {
+            if(ShipDockApp.Instance.Servers.IsServersReady)
+            {
+                UpdaterNotice.RemoveSceneUpdater(updater);
+
+                Loader loader = new Loader();
+                loader.CompletedEvent.AddListener(OnComplete);
+                loader.Load("https://gc-game-test-ufile.greencheng.com/20180731/AB_Res/res/map_5_6/main_thread_game_5_6.ab/f51f7c92c50c0b49e6a213b21a5e79dc.ab");
+            }
         }
 
         private void OnServersInit()
@@ -59,7 +90,11 @@ namespace FWGame
             Debug.Log(notice.Name);
             #endregion
 
+        }
 
+        private void OnComplete(bool arg0, Loader arg1)
+        {
+            Debug.Log(arg0 + " " + arg1.Assets);
         }
 
         private void OnDestroy()

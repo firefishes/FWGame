@@ -1,4 +1,5 @@
-﻿using ShipDock.Notices;
+﻿using System;
+using ShipDock.Notices;
 using ShipDock.Pooling;
 
 namespace ShipDock.Applications

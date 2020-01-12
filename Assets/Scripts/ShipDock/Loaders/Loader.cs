@@ -1,6 +1,4 @@
-﻿
-using System.Collections;
-using ShipDock.Interfaces;
+﻿using ShipDock.Interfaces;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -27,30 +25,29 @@ namespace ShipDock.Loader
 
         public void Dispose()
         {
-            Clear();
-        }
-
-        public void Clear()
-        {
             CompletedEvent.RemoveAllListeners();
 
             SetUrl(string.Empty);
 
-            mRequester = default;
+            if (mAsyncOperation != default)
+            {
+                mAsyncOperation.completed -= CheckResult;
+            }
             mAsyncOperation = default;
+            mRequester = default;
             ResultData = default;
             Assets = default;
         }
 
         public void InitLoader(int loadType)
         {
-            Clear();
+            Dispose();
             SetLoadType(loadType);
         }
 
         public void Load(string url)
         {
-            if (!string.IsNullOrEmpty(Url) && (Url != url))
+            if (string.IsNullOrEmpty(Url) && (Url != url))
             {
                 SetUrl(url);
             }
@@ -68,6 +65,10 @@ namespace ShipDock.Loader
             if (IsLoading)
             {
                 mRequester.Abort();
+                if(mAsyncOperation != default)
+                {
+                    mAsyncOperation.completed -= CheckResult;
+                }
                 mAsyncOperation = default;
             }
         }
@@ -98,19 +99,13 @@ namespace ShipDock.Loader
             }
         }
 
-        private IEnumerator StartLoad()
+        private void StartLoad()
         {
             if (mRequester != null)
             {
                 IsLoading = true;
                 SetAsync();
-                yield return mAsyncOperation;
-
-                CheckResult();
-            }
-            else
-            {
-                yield return 0;
+                mAsyncOperation.completed += CheckResult;
             }
         }
 
@@ -123,7 +118,7 @@ namespace ShipDock.Loader
 #endif
         }
 
-        private void CheckResult()
+        private void CheckResult(AsyncOperation sync)
         {
             IsLoading = false;
             if (IsError())

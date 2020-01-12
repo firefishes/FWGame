@@ -20,11 +20,16 @@ namespace ShipDock.Applications
             mCacher = new List<IUpdate>();
             mDeleted = new List<IUpdate>();
 
-            mAddItemNoticeName = addNoticeName;
-            mRemoveItemNoticeName = removeNoticeName;
-
-            mAddItemNoticeName.Add(OnAddItem);
-            mRemoveItemNoticeName.Add(OnRemoveItem);
+            if(addNoticeName != int.MaxValue)
+            {
+                mAddItemNoticeName = addNoticeName;
+                mAddItemNoticeName.Add(OnAddItem);
+            }
+            if(removeNoticeName != int.MaxValue)
+            {
+                mRemoveItemNoticeName = removeNoticeName;
+                mRemoveItemNoticeName.Add(OnRemoveItem);
+            }
         }
 
         public void Dispose()
