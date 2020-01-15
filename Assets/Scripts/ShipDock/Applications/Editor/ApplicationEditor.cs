@@ -9,7 +9,7 @@ namespace ShipDock.Editors
     public class ApplicationEditor : ShipDockEditor
     {
         [MenuItem("ShipDock/Applicaton Editor")]
-        public static void Init()
+        public static void Open()
         {
             InitEditorWindow<ApplicationEditor>("游戏客户端设置");
         }
@@ -45,41 +45,45 @@ namespace ShipDock.Editors
 
         private void UpdateABBuildPanelUI()
         {
-            //Func<BuildTarget, bool, string> buildABFunc = GetABBuildOutputFunc();
-            //if (GUILayout.Button("IOS AB"))
-            //{
-            //    mApplyStrings["build_ab_output"] = buildABFunc(BuildTarget.iOS, false);
-            //    AutoSetAssetBundle.OnABBuilt = OnBuildABFinished;
-            //    ConfirmPopup("IOS AB", "你确定？", AutoSetAssetBundle.BuildIOSAB, "就是干");
-            //}
-            //if (GUILayout.Button("OSX AB"))
-            //{
-            //    mApplyStrings["build_ab_output"] = buildABFunc(BuildTarget.StandaloneOSX, false);
-            //    AutoSetAssetBundle.OnABBuilt = OnBuildABFinished;
-            //    ConfirmPopup("OSX AB", "你确定？", AutoSetAssetBundle.BuildOSXAB, "就是干");
-            //}
-            //if (GUILayout.Button("Android AB"))
-            //{
-            //    mApplyStrings["build_ab_output"] = buildABFunc(BuildTarget.Android, false);
-            //    AutoSetAssetBundle.OnABBuilt = OnBuildABFinished;
-            //    ConfirmPopup("Android AB", "你确定？", AutoSetAssetBundle.BuildAndroidAB, "就是干");
-            //}
-            //if (GUILayout.Button("Win AB"))
-            //{
-            //    mApplyStrings["build_ab_output"] = buildABFunc(BuildTarget.StandaloneWindows, false);
-            //    AutoSetAssetBundle.OnABBuilt = OnBuildABFinished;
-            //    ConfirmPopup("Win AB", "你确定？", AutoSetAssetBundle.BuildWinAB, "就是干");
-            //}
-            //if (GUILayout.Button("Win64 AB"))
-            //{
-            //    mApplyStrings["build_ab_output"] = buildABFunc(BuildTarget.StandaloneWindows64, false);
-            //    AutoSetAssetBundle.OnABBuilt = OnBuildABFinished;
-            //    ConfirmPopup("Win64 AB", "你确定？", AutoSetAssetBundle.BuildWin64AB, "就是干");
-            //}
-            //if (GUILayout.Button("Delete all AB"))
-            //{
-            //    ConfirmPopup("Delete all AB", "你确定？", AutoSetAssetBundle.DelAssetBundle, "绝不反悔", logWhenInvoked: "资源已删除");
-            //}
+            Func<BuildTarget, bool, string> buildABFunc = GetABBuildOutputFunc();
+            if (GUILayout.Button("IOS"))
+            {
+                mApplyStrings["build_ab_output"] = buildABFunc(BuildTarget.iOS, false);
+                //AssetBundleBuilder.OnABBuilt = OnBuildABFinished;
+                ConfirmPopup("IOS AB", "你确定？", AssetBundleBuilder.BuildIOSAB, "就是干");
+            }
+            if (GUILayout.Button("OSX"))
+            {
+                mApplyStrings["build_ab_output"] = buildABFunc(BuildTarget.StandaloneOSX, false);
+                //AssetBundleBuilder.OnABBuilt = OnBuildABFinished;
+                ConfirmPopup("OSX AB", "你确定？", AssetBundleBuilder.BuildOSXAB, "就是干");
+            }
+            if (GUILayout.Button("ANDROID"))
+            {
+                mApplyStrings["build_ab_output"] = buildABFunc(BuildTarget.Android, false);
+                //AssetBundleBuilder.OnABBuilt = OnBuildABFinished;
+                ConfirmPopup("Android AB", "你确定？", AssetBundleBuilder.BuildAndroidAB, "就是干");
+            }
+            if (GUILayout.Button("WIN"))
+            {
+                mApplyStrings["build_ab_output"] = buildABFunc(BuildTarget.StandaloneWindows, false);
+                //AssetBundleBuilder.OnABBuilt = OnBuildABFinished;
+                ConfirmPopup("Win AB", "你确定？", AssetBundleBuilder.BuildWinAB, "就是干");
+            }
+            if (GUILayout.Button("WIN64"))
+            {
+                mApplyStrings["build_ab_output"] = buildABFunc(BuildTarget.StandaloneWindows64, false);
+                //AssetBundleBuilder.OnABBuilt = OnBuildABFinished;
+                ConfirmPopup("Win64 AB", "你确定？", AssetBundleBuilder.BuildWin64AB, "就是干");
+            }
+            if (GUILayout.Button("DELETE"))
+            {
+                ConfirmPopup("Delete all AB", "你确定？", AssetBundleBuilder.DelAssetBundle, "绝不反悔", log: "资源已删除");
+            }
+        }
+
+        private void OnBuildABFinished()
+        {
         }
 
         protected Func<BuildTarget, bool, string> GetABBuildOutputFunc()

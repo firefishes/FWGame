@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace ShipDock.Tools
 {
     static public class StringUtils
     {
+        public const string PATH_SYMBOL = "/";
+        public const char PATH_SYMBOL_CHAR = '/';
+
         public static string GetQualifiedClassName(object target)
         {
             if(target == null)

@@ -8,15 +8,16 @@ namespace ShipDock.Editors
 {
     public abstract class ShipDockEditor : EditorWindow
     {
-        protected static void InitEditorWindow<T>(string title) where T : ShipDockEditor
+        public static void InitEditorWindow<T>(string title, Rect rect = default) where T : ShipDockEditor
         {
-            ShipDockEditor window = GetWindow<T>(title);
+            ShipDockEditor window = (rect != default) ? GetWindowWithRect<T>(rect, true, title) : GetWindow<T>(title);
             window.Preshow();
             window.Show();
         }
 
         protected KeyValueList<string, bool> mApplyValues;
         protected KeyValueList<string, string> mApplyStrings;
+        protected KeyValueList<string, ValueItem> mValueItemMapper;
 
         private List<int> mGUIFlagKeys;
         private List<string> mFlagKeys;
@@ -27,6 +28,14 @@ namespace ShipDock.Editors
         {
             UpdateEditorAsset();
             InitConfigFlagAndValues();
+
+            bool value;
+            int max = mFlagKeys.Count;
+            for (int i = 0; i < max; i++)
+            {
+                value = mConfigFlagValues[i];
+                CheckClientConfigApplyed(mFlagKeys[i], ref value);
+            }
         }
 
         protected virtual void UpdateEditorAsset()
@@ -44,16 +53,10 @@ namespace ShipDock.Editors
             mFlagKeys = new List<string>();
             mFlagLabels = new List<string>();
             mConfigFlagValues = new List<bool>();
+            mValueItemMapper = new KeyValueList<string, ValueItem>();
 
             mApplyValues = new KeyValueList<string, bool>();
 
-            bool value;
-            int max = mFlagKeys.Count;
-            for (int i = 0; i < max; i++)
-            {
-                value = mConfigFlagValues[i];
-                CheckClientConfigApplyed(mFlagKeys[i], ref value);
-            }
         }
 
         protected void CheckClientConfigApplyed(string flagKey, ref bool clientConfigFlag)
@@ -88,6 +91,30 @@ namespace ShipDock.Editors
             return (index >= 0) && mConfigFlagValues[index];
         }
 
+        public void SetValueItem(string keyField, string value)
+        {
+            ValueItem valueItem = ValueItem.New(keyField, value);
+            mValueItemMapper[keyField] = valueItem;
+        }
+
+        public ValueItem GetValueItem(string keyField)
+        {
+            return mValueItemMapper[keyField];
+        }
+
+        protected void ValueItemTextField(string keyField)
+        {
+            string input = GetValueItem(keyField).Value;
+            string value = EditorGUILayout.TextField(input);
+            GetValueItem(keyField).Change(value);
+        }
+
+        protected void ValueItemLabel(string keyField)
+        {
+            string input = GetValueItem(keyField).Value;
+            EditorGUILayout.LabelField(input);
+        }
+
         private void OnGUI()
         {
             EditorGUILayout.Space();
@@ -99,8 +126,7 @@ namespace ShipDock.Editors
         protected virtual void CheckGUI()
         {
         }
-
-
+        
         protected void ConfirmPopup(string titleValue, string message, Action action = null, string ok = "好的", string cancel = "取消", string log = "")
         {
             bool result;
