@@ -2,8 +2,6 @@
 
 using ShipDock.Applications;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -21,7 +19,7 @@ namespace ShipDock.Editors
         public static void DelAssetBundle()
         {
 
-            DeleteABRes(AppPaths.DataPathResDataRoot);
+            DeleteABRes(AppPaths.StreamingResDataRoot);
 
             string resRoot = AppPaths.StreamingResDataRoot;
             string platformRoot = GetSuffix(BuildTarget.Android);
@@ -90,7 +88,7 @@ namespace ShipDock.Editors
 
         public static string GetSuffix(BuildTarget buildPlatform)
         {
-            string result = string.Empty;
+            string result;
             switch (buildPlatform)
             {
                 case BuildTarget.Android:
@@ -120,9 +118,7 @@ namespace ShipDock.Editors
         /// </summary>
         public void BuildAssetBundle(BuildTarget buildPlatform)
         {
-            DirectoryInfo[] dirScenesDIRArray = null;
             AssetDatabase.RemoveUnusedAssetBundleNames();
-
             string rootPath = AppPaths.DataPathResDataRoot;
             if (!Directory.Exists(rootPath))
             {
@@ -136,66 +132,14 @@ namespace ShipDock.Editors
                 return;
             }
 
-            string outputRoot = AppPaths.StreamingResDataRoot;
-            string platformPath = GetSuffix(buildPlatform);
+            ShipDockEditorData editorData = ShipDockEditorData.Instance;
+            editorData.outputRoot = AppPaths.StreamingResDataRoot;
+            editorData.platformPath = GetSuffix(buildPlatform);
+            editorData.buildPlatform = buildPlatform;
 
-            string tmpScenesDIR = string.Empty;
-            string tmpScenesName = string.Empty;
-            string abOutputPath = string.Empty;
-
-            AssetBundleInfoPopupEditor.Popup();
-            AssetBundleInfoPopupEditor infoPopup = EditorWindow.focusedWindow as AssetBundleInfoPopupEditor;
-            
             UnityEngine.Object[] selections = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.DeepAssets);
-            int max = selections.Length;
-            for (int i = 0; i < max; i++)
-            {
-                Debug.Log(AssetDatabase.GetAssetPath(selections[i]));
-
-                infoPopup.SetValueItem("res_" + i.ToString(), AssetDatabase.GetAssetPath(selections[i]));
-            }
-            infoPopup.ResList = selections;
-
-            return;
-            FileSystemInfo dirInfo = null;
-
-            List<AssetImporter> fileList = new List<AssetImporter>();
-            for (int i = 0; i < assetLabelRoots.Length; i++)
-            {
-                DirectoryInfo dirTempInfo = new DirectoryInfo(assetLabelRoots[i]);
-                dirScenesDIRArray = dirTempInfo.GetDirectories();
-
-                for (int j = 0; j < dirScenesDIRArray.Length; j++)
-                {
-                    tmpScenesDIR = rootPath + dirScenesDIRArray[j].Name;
-                    int tmpIndex = tmpScenesDIR.LastIndexOf("/", StringComparison.Ordinal);
-                    tmpScenesName = tmpScenesDIR.Substring(tmpIndex + 1);
-                    dirInfo = dirScenesDIRArray[j];
-                    JudgeDIRorFileByRecursive(ref dirInfo, tmpScenesName, ref fileList);
-                }
-                abOutputPath = outputRoot + platformPath + dirTempInfo.Name;
-                if (!Directory.Exists(abOutputPath))
-                {
-                    Directory.CreateDirectory(abOutputPath);
-                }
-
-                BuildPipeline.BuildAssetBundles(abOutputPath, BuildAssetBundleOptions.None, buildPlatform);
-
-                fileList.ForEach(info => info.assetBundleName = string.Empty);
-                fileList.Clear();
-            }
-
-            //提示信息
-            if (EditorUtility.DisplayDialog("提示", string.Format("资源打包完成!!!"), "OK"))
-            {
-                AssetDatabase.Refresh();
-            }
-
-            if (OnABBuilt != null)
-            {
-                OnABBuilt.Invoke();
-                OnABBuilt = null;
-            }
+            ShipDockEditorData.Instance.selections = selections;
+            AssetBundleInfoPopupEditor.Popup();
         }
 
         private static void DeleteABRes(string strNeedDeleteDIR)
@@ -215,139 +159,6 @@ namespace ShipDock.Editors
                 Directory.Delete(strNeedDeleteDIR, true);
                 //刷新
                 AssetDatabase.Refresh();
-            }
-        }
-
-        /// <summary>递归判断是否为目录与文件，修改AssetBundle 的标记(lable)</summary>
-        private static void JudgeDIRorFileByRecursive(ref FileSystemInfo fileSysInfo, string scenesName, ref List<AssetImporter> assetList)
-        {
-            if (!fileSysInfo.Exists)
-            {
-                Debug.LogError("文件或者目录名称： " + fileSysInfo + " 不存在，请检查");
-                return;
-            }
-
-            //得到当前目录下一级的文件信息集合
-            DirectoryInfo dirInfoObj = fileSysInfo as DirectoryInfo;//文件信息转换为目录信息
-            FileSystemInfo[] fileSysArray = dirInfoObj.GetFileSystemInfos();
-            FileSystemInfo item = null;
-            foreach (FileSystemInfo fileInfo in fileSysArray)
-            {
-                FileInfo fileinfoObj = fileInfo as FileInfo;
-                //文件类型
-                if (fileinfoObj != null)
-                {
-                    //修改此文件的AssetBundle标签
-                    SetFileABLabel(fileinfoObj, scenesName, assetList);
-                }
-                //目录类型
-                else
-                {
-                    item = fileInfo;
-                    //如果是目录则递归调用
-                    JudgeDIRorFileByRecursive(ref item, scenesName, ref assetList);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 对指定的文件设置“AB包名称”
-        /// </summary>
-        private static void SetFileABLabel(FileInfo fileinfoObj, string scenesName, List<AssetImporter> assetList)
-        {
-            //参数检查（*.meta 文件不做处理）
-            if ((fileinfoObj.Extension == ".meta") || (fileinfoObj.Extension == ".DS_Store"))
-            {
-                return;
-            }
-
-            //得到AB包名称
-            string strABName = GetABName(fileinfoObj, scenesName);
-            //获取资源文件的相对路径
-            int tmpIndex = fileinfoObj.FullName.IndexOf("Assets", System.StringComparison.Ordinal);
-            string strAssetFilePath = fileinfoObj.FullName.Substring(tmpIndex);//得到文件相对路径
-            //给资源文件设置AB名称以及后缀
-            AssetImporter tmpImporterObj = AssetImporter.GetAtPath(strAssetFilePath);
-            tmpImporterObj.assetBundleName = string.Empty;
-            if (assetList != null)
-            {
-                assetList.Add(tmpImporterObj);
-            }
-            tmpImporterObj.assetBundleName = strABName;//这里的字符串需要替换
-            if (fileinfoObj.Extension == ".unity")
-            {
-                tmpImporterObj.assetBundleVariant = "u3d";
-            }
-            else
-            {
-                tmpImporterObj.assetBundleVariant = "ab";
-            }
-            //tmpImporterObj.SaveAndReimport();
-        }
-
-        /// <summary>
-        /// 获取AB包的名称
-        /// </summary>
-        /// <param name="fileinfoObj">文件信息</param>
-        /// <param name="scenesName">场景名称</param>
-        /// AB 包形成规则：
-        ///     文件AB包名称=“所在二级目录名称”（场景名称）+“三级目录名称”（下一级的“类型名称”）
-        /// <returns>
-        /// 返回一个合法的“AB包名称”
-        /// </returns>
-        private static string GetABName(FileInfo fileinfoObj, string scenesName)
-        {
-            //返回AB包名称
-            string strABName = string.Empty;
-            //Win路径
-            string tmpWinPath = fileinfoObj.FullName;//文件信息的全路径（Win格式）
-            //Unity路径
-            string tmpUnityPath = tmpWinPath.Replace("\\", "/");//替换为Unity字符串分割符
-            int tmpSceneNamePostion = tmpUnityPath.IndexOf(scenesName, System.StringComparison.Ordinal) + scenesName.Length;//定位“场景名称”后面字符位置
-            //AB包中“类型名称”所在区域
-            string strABFileNameArea = tmpUnityPath.Substring(tmpSceneNamePostion + 1);
-            if (strABFileNameArea.Contains("/"))
-            {
-                string[] tempStrArray = strABFileNameArea.Split('/');
-                //AB包名称
-                strABName = scenesName + "/" + tempStrArray[0];
-            }
-            else
-            {
-                //定义*.Unity 文件形成的特殊AB包名称
-                strABName = scenesName + "/" + scenesName;
-            }
-            return strABName;
-        }
-    }
-
-    public class ABWindow : EditorWindow
-    {
-        string myString = "Hello";
-        bool groupEndable;
-        bool myBool = true;
-        float myfloat = 1.3f;
-
-        //[MenuItem("Tools/MyWindow")]
-        static void Init()
-        {
-            ABWindow window = EditorWindow.GetWindow(typeof(ABWindow)) as ABWindow;
-            window.titleContent.text = "AssetBundleSetting";
-            window.Show();
-        }
-
-        private void OnGUI()
-        {
-            GUILayout.Label("Base Setting", EditorStyles.boldLabel);
-            myString = EditorGUILayout.TextField("textfiled", myString);
-
-            groupEndable = EditorGUILayout.BeginToggleGroup("Option", groupEndable);
-            myBool = EditorGUILayout.Toggle("Toggle", myBool);
-            myfloat = EditorGUILayout.Slider("Slider", myfloat, -3, 3);
-            EditorGUILayout.EndToggleGroup();
-            if (GUILayout.Button("Select", EditorStyles.label))
-            {
-                EditorUtility.DisplayDialog("删除所有AB包文件吗？", "是否删除文件？", "是", "否");
             }
         }
     }

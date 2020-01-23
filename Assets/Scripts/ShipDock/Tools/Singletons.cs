@@ -34,7 +34,7 @@ namespace ShipDock.Tools
         }
         #endregion
 
-        internal Singletons()
+        public Singletons()
         {
             if (instance != null)
             {

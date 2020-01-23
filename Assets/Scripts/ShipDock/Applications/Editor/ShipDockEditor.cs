@@ -111,7 +111,8 @@ namespace ShipDock.Editors
 
         protected void ValueItemLabel(string keyField)
         {
-            string input = GetValueItem(keyField).Value;
+            ValueItem item = GetValueItem(keyField);
+            string input = item != default ? item.Value : string.Empty;
             EditorGUILayout.LabelField(input);
         }
 
