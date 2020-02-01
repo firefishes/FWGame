@@ -98,6 +98,7 @@ namespace ShipDock.Editors
 
                 editorData.ABCreaterMapper?.Clear();
                 Utils.Reclaim(ref editorData.ABCreaterMapper, false);
+
                 editorData.ABCreaterMapper = new KeyValueList<string, List<ABAssetCreater>>();
                 CreateAssetImporters(ref abName, ref editorData.ABCreaterMapper);
 
@@ -182,20 +183,20 @@ namespace ShipDock.Editors
                     list[n].Importer.assetBundleName = abName;
                     Debug.Log(abName);
                 }
-                output = editorData.outputRoot.Append(abName);
-                Debug.Log(output);
-                if (!Directory.Exists(output))
-                {
-                    Directory.CreateDirectory(output);
-                }
+                //output = editorData.outputRoot.Append(abName);
+                //Debug.Log(output);
+                //if (!Directory.Exists(output))
+                //{
+                //    Directory.CreateDirectory(output);
+                //}
 
-                BuildPipeline.BuildAssetBundles(output, BuildAssetBundleOptions.None, editorData.buildPlatform);
-
-                for (int n = 0; n < m; n++)
-                {
-                    list[n].Importer.assetBundleName = default;
-                }
+                //for (int n = 0; n < m; n++)
+                //{
+                //    list[n].Importer.assetBundleName = default;
+                //}
             }
+            BuildPipeline.BuildAssetBundles(editorData.outputRoot, BuildAssetBundleOptions.None, editorData.buildPlatform);
+
         }
 
         private void CreateAssetItemWithButton()
