@@ -25,8 +25,29 @@ static public class ShipDockExtension
         return mBuilder.ToString();
     }
 
-    public static bool IsEmpty(this string target)
+    public static string Joins(this string[] target, string symbol = ",")
     {
-        return string.IsNullOrEmpty(target);
+        string connector;
+        string result = string.Empty;
+        int max = target.Length;
+        for (int i = 0; i < max; i++)
+        {
+            connector = (i == max - 1) ? string.Empty : symbol;
+            result = result.Append(target[i], connector);
+        }
+        return result;
+    }
+
+    public static string Joins(this List<string> target, string symbol = ",")
+    {
+        string connector;
+        string result = string.Empty;
+        int max = target.Count;
+        for (int i = 0; i < max; i++)
+        {
+            connector = (i == max - 1) ? string.Empty : symbol;
+            result = result.Append(target[i], connector);
+        }
+        return result;
     }
 }

@@ -159,7 +159,7 @@ namespace ShipDock.Testers
                 }
                 else
                 {
-                    if (logger.logColor.IsEmpty())
+                    if (string.IsNullOrEmpty(logger.logColor))
                     {
                         DebugUtils.LogInColor(log);
                     }

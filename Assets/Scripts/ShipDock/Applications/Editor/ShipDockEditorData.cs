@@ -11,6 +11,7 @@ namespace ShipDock.Editors
         public string platformPath;
         public BuildTarget buildPlatform;
         public UnityEngine.Object[] selections;
+        public KeyValueList<string, List<ABAssetCreater>> ABCreaterMapper;
     }
 
 }

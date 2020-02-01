@@ -95,7 +95,7 @@ namespace ShipDock.Server
                 OnInit = default;
             }
             string serverName = (server != null) ? server.ServerName : string.Empty;
-            if (!serverName.IsEmpty() && !mServerMapper.IsContainsKey(serverName))
+            if (!string.IsNullOrEmpty(serverName) && !mServerMapper.IsContainsKey(serverName))
             {
                 SetAndInitServer(ref server);
                 SetServerPriority(server);

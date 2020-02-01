@@ -4,6 +4,7 @@ namespace ShipDock.Tools
 {
     static public class StringUtils
     {
+        public const string DOT = ".";
         public const string PATH_SYMBOL = "/";
         public const char PATH_SYMBOL_CHAR = '/';
 

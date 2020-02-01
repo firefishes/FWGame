@@ -9,6 +9,46 @@ using UnityEngine;
 
 namespace ShipDock.Editors
 {
+    public class ABAssetCreater
+    {
+        private List<string> mNameNode;
+
+        public ABAssetCreater(string nameSource)
+        {
+            mNameNode = new List<string>();
+
+            ABNameSourse = nameSource;
+        }
+
+        public string GetABName()
+        {
+            string node;
+            string[] splited = ABNameSourse?.Split(StringUtils.PATH_SYMBOL_CHAR);
+            int max = splited.Length;
+            for (int i = 0; i < max; i++)
+            {
+                node = splited[i];
+                if (node.IndexOf(StringUtils.DOT, StringComparison.Ordinal) >= 0)
+                {
+                    return mNameNode.Joins(StringUtils.PATH_SYMBOL);
+                }
+
+                if (i <= 1)
+                {
+                    mNameNode.Add(node);
+                }
+                else
+                {
+                    return mNameNode.Joins(StringUtils.PATH_SYMBOL);
+                }
+            }
+            return string.Empty;
+        }
+
+        public AssetImporter Importer { get; set; }
+        public string ABNameSourse { get; private set; }
+    }
+
     public class AssetBundleInfoPopupEditor : ShipDockEditor
     {
         public static AssetBundleInfoPopupEditor Popup()
@@ -21,9 +61,9 @@ namespace ShipDock.Editors
         {
             base.InitConfigFlagAndValues();
 
-            SetValueItem("abName", string.Empty);
+            //SetValueItem("abName", string.Empty);
             SetValueItem("ab_item_name", string.Empty);
-            SetValueItem("abPath", string.Empty);
+            //SetValueItem("abPath", string.Empty);
         }
 
         protected override void ReadyClientValues()
@@ -42,8 +82,8 @@ namespace ShipDock.Editors
             EditorGUILayout.BeginVertical();
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("资源包名称：");
-            ValueItemTextField("abName");
-            ValueItemTextField("abPath");
+            //ValueItemTextField("abName");
+            //ValueItemTextField("abPath");
             EditorGUILayout.Space();
             EditorGUILayout.EndHorizontal();
 
@@ -51,32 +91,28 @@ namespace ShipDock.Editors
 
             CreateAssetItemWithButton();
 
-            string abName = GetValueItem("abName").Value;
-            string abPath = GetValueItem("abPath").Value;
-            if (!string.IsNullOrEmpty(abName))
+            string abName = string.Empty;
+            if (GUILayout.Button("Build"))
             {
-                if(GUILayout.Button("Build"))
+                ShipDockEditorData editorData = ShipDockEditorData.Instance;
+
+                editorData.ABCreaterMapper?.Clear();
+                Utils.Reclaim(ref editorData.ABCreaterMapper, false);
+                editorData.ABCreaterMapper = new KeyValueList<string, List<ABAssetCreater>>();
+                CreateAssetImporters(ref abName, ref editorData.ABCreaterMapper);
+
+                string output = editorData.outputRoot;//.Append(abPath);
+                if (!Directory.Exists(output))
                 {
-                    List<AssetImporter> importers = new List<AssetImporter>();
-                    CreateAssetImporters(ref abName, ref importers);
+                    Directory.CreateDirectory(output);
+                }
 
-                    ShipDockEditorData editorData = ShipDockEditorData.Instance;
-                    string output = editorData.outputRoot.Append(abPath);
-                    if (!Directory.Exists(output))
-                    {
-                        Directory.CreateDirectory(output);
-                    }
-                    BuildPipeline.BuildAssetBundles(output, BuildAssetBundleOptions.None, editorData.buildPlatform);
+                BuildAssetByCreater();
+                //BuildPipeline.BuildAssetBundles(output, BuildAssetBundleOptions.None, editorData.buildPlatform);
 
-                    if (EditorUtility.DisplayDialog("提示", string.Format("资源打包完成!!!"), "OK"))
-                    {
-                        foreach (var impt in importers)
-                        {
-                            impt.assetBundleName = string.Empty;
-                            impt.assetBundleName = abName;
-                        }
-                        AssetDatabase.Refresh();
-                    }
+                if (EditorUtility.DisplayDialog("提示", string.Format("资源打包完成!!!"), "OK"))
+                {
+                    AssetDatabase.Refresh();
                 }
             }
 
@@ -84,13 +120,16 @@ namespace ShipDock.Editors
             EditorGUILayout.EndVertical();
         }
 
-        private void CreateAssetImporters(ref string abName, ref List<AssetImporter> importers)
+        private void CreateAssetImporters(ref string abName, ref KeyValueList<string, List<ABAssetCreater>> mapper)
         {
             string path;
             string assetItemName;
             string relativeName;
+            string starter = StringUtils.PATH_SYMBOL.Append(AppPaths.resDataRoot);
+
             FileInfo fileInfo;
-            AssetImporter importer;
+            List<ABAssetCreater> list;
+            int starterLen = starter.Length;
             int max = ResList.Length;
             for (int i = 0; i < max; i++)
             {
@@ -103,10 +142,59 @@ namespace ShipDock.Editors
                 {
                     continue;
                 }
-                Debug.Log(fileInfo.Extension);
-                importer = AssetImporter.GetAtPath(assetItemName);
-                importer.assetBundleName = abName;
-                importers.Add(importer);
+
+                int index = path.IndexOf(starter, StringComparison.Ordinal);
+                ABAssetCreater creater = new ABAssetCreater(path.Substring(index + starterLen));
+                abName = creater.GetABName();
+
+                if (mapper.ContainsKey(abName))
+                {
+                    list = mapper[abName];
+                }
+                else
+                {
+                    list = new List<ABAssetCreater>();
+                    mapper[abName] = list;
+                }
+                creater.Importer = AssetImporter.GetAtPath(assetItemName);
+                list.Add(creater);
+            }
+        }
+
+        private void BuildAssetByCreater()
+        {
+            ShipDockEditorData editorData = ShipDockEditorData.Instance;
+
+            string abName;
+            string output;
+            List<ABAssetCreater> list;
+
+            int max = editorData.ABCreaterMapper.Size;
+            List<string> abNames = editorData.ABCreaterMapper.Keys;
+            List<List<ABAssetCreater>> creaters = editorData.ABCreaterMapper.Values;
+            for (int i = 0; i < max; i++)
+            {
+                abName = abNames[i];
+                list = creaters[i];
+                int m = list.Count;
+                for (int n = 0; n < m; n++)
+                {
+                    list[n].Importer.assetBundleName = abName;
+                    Debug.Log(abName);
+                }
+                output = editorData.outputRoot.Append(abName);
+                Debug.Log(output);
+                if (!Directory.Exists(output))
+                {
+                    Directory.CreateDirectory(output);
+                }
+
+                BuildPipeline.BuildAssetBundles(output, BuildAssetBundleOptions.None, editorData.buildPlatform);
+
+                for (int n = 0; n < m; n++)
+                {
+                    list[n].Importer.assetBundleName = default;
+                }
             }
         }
 
