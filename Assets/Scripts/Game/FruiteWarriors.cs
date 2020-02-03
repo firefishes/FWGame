@@ -14,6 +14,9 @@ namespace FWGame
 {
     public class FruiteWarriors : MonoBehaviour
     {
+
+        private MethodUpdater updater;
+
         void Start()
         {
             ShipDockApp.StartUp(120, OnShipDockStart);
@@ -54,17 +57,22 @@ namespace FWGame
             UpdaterNotice.AddSceneUpdater(updater);
         }
 
-        private MethodUpdater updater;
-
         private void CheckServerInited(int obj)
         {
             if(ShipDockApp.Instance.Servers.IsServersReady)
             {
                 UpdaterNotice.RemoveSceneUpdater(updater);
 
-                Loader loader = new Loader();
-                loader.CompletedEvent.AddListener(OnComplete);
-                loader.Load("https://gc-game-test-ufile.greencheng.com/20180731/AB_Res/res/map_5_6/main_thread_game_5_6.ab/f51f7c92c50c0b49e6a213b21a5e79dc.ab");
+                //Loader loader = new Loader();
+                //loader.CompletedEvent.AddListener(OnComplete);
+                //loader.Load("https://gc-game-test-ufile.greencheng.com/20180731/AB_Res/res/map_5_6/main_thread_game_5_6.ab/f51f7c92c50c0b49e6a213b21a5e79dc.ab");
+
+                AssetsLoader assetsLoader = new AssetsLoader();
+                assetsLoader.CompleteEvent.AddListener(OnComplete);
+                assetsLoader
+                    .Load(AppPaths.StreamingResDataRoot.Append("ResData"), "ResData/ResData")
+                    .Load("roles/bananarole")
+                    .Load(out _);//.Append("roles/bananarole"));
             }
         }
 

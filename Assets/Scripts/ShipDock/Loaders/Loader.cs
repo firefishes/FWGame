@@ -15,6 +15,13 @@ namespace ShipDock.Loader
 
         public static int retryMax = 5;
 
+        public static Loader GetAssetBundleLoader()
+        {
+            Loader result = new Loader();
+            result.InitLoader(LOADER_ASSETBUNDLE);
+            return result;
+        }
+
         private UnityWebRequest mRequester;
         private AsyncOperation mAsyncOperation;
 
@@ -47,7 +54,7 @@ namespace ShipDock.Loader
 
         public void Load(string url)
         {
-            if (string.IsNullOrEmpty(Url) && (Url != url))
+            if (Url != url)
             {
                 SetUrl(url);
             }
@@ -148,6 +155,7 @@ namespace ShipDock.Loader
 
         protected virtual void Loaded()
         {
+            mAsyncOperation.completed -= CheckResult;
             CreateResult();
             CompletedEvent.Invoke(true, this);
         }
@@ -193,6 +201,7 @@ namespace ShipDock.Loader
             }
             else
             {
+                mAsyncOperation.completed -= CheckResult;
                 CompletedEvent.Invoke(false, this);
             }
         }
@@ -208,8 +217,16 @@ namespace ShipDock.Loader
             Url = url;
         }
 
-        protected int RetryCount { get; set; }
+        public float Progress
+        {
+            get
+            {
+                return mAsyncOperation != default ? mAsyncOperation.progress : 0f;
+            }
+        }
 
+        protected int RetryCount { get; set; }
+        public OnLoaderCompleted CompletedEvent { get; private set; } = new OnLoaderCompleted();
         public int LoadType { get; private set; }
         public bool IsLoading { get; private set; }
         public bool IsRetryAlways { get; set; }
@@ -217,7 +234,6 @@ namespace ShipDock.Loader
         public string Url { get; private set; }
         public byte[] ResultData { get; private set; }
         public AssetBundle Assets { get; private set; }
-        public OnLoaderCompleted CompletedEvent { get; set; } = new OnLoaderCompleted();
     }
 
 }

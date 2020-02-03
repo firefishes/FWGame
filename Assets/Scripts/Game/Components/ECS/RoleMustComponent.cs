@@ -48,7 +48,7 @@ namespace FWGame
             }
             if(!mapper.ContainsKey(mRoleItem))
             {
-                Debug.Log(mid);
+                //Debug.Log(mid);
                 mapper[mRoleItem] = mid;
             }
         }

@@ -62,8 +62,22 @@ namespace ShipDock.Loader
             {
                 return;
             }
+            AddBundle(string.Empty, ref bundle);
+        }
+
+        public void Add(string manifestName, AssetBundle bundle)
+        {
+            if (bundle == default)
+            {
+                return;
+            }
+            AddBundle(manifestName, ref bundle);
+        }
+
+        private void AddBundle(string name, ref AssetBundle bundle)
+        {
+            name = string.IsNullOrEmpty(name) ? bundle.name : name;
             IAssetBundleInfo info;
-            string name = bundle.name;
             if (!mCaches.ContainsKey(name))
             {
                 info = new AssetBundleInfo(bundle);
@@ -98,8 +112,9 @@ namespace ShipDock.Loader
             }
         }
 
-        public AssetBundleManifest GetManifest(string name)
+        public AssetBundleManifest GetManifest(string name = "")
         {
+            name = string.IsNullOrEmpty(name) && (mABManifests.Size > 0) ? mABManifests.Keys[0] : name;
             return HasBundel(name) ? mABManifests[name] : default;
         }
     }
