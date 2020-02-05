@@ -30,7 +30,7 @@ namespace ShipDock.Loader
         private void OnAppReady()
         {
             mCustomAssetBundle?.FillAssets(ref m_Assets);
-            ShipDockApp.AppInstance.ABs.SetCustomBundles(ref mCustomAssetBundle);
+            ShipDockApp.Instance.ABs.SetCustomBundles(ref mCustomAssetBundle);
         }
     }
 

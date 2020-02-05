@@ -1,8 +1,5 @@
 ﻿using FWGame;
 using ShipDock.Applications;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TestComponent : MonoBehaviour
@@ -17,17 +14,17 @@ public class TestComponent : MonoBehaviour
             Position = transform.localPosition,
             Direction = new Vector3(0, 0, UnityEngine.Random.Range(0.1f, 5f))
         };
-        ShipDockApp.AppInstance.AddStart(OnAppStart);
+        ShipDockApp.Instance.AddStart(OnAppStart);
     }
 
     private void OnAppStart()
     {
-        ShipDockApp.AppInstance.Servers.AddOnServerFinished(OnServerStart);
+        ShipDockApp.Instance.Servers.AddOnServerFinished(OnServerStart);
     }
 
     private void OnServerStart()
     {
-        var component = ShipDockApp.AppInstance.Components.GetComponentByAID(1);
+        var component = ShipDockApp.Instance.Components.GetComponentByAID(1);
         role.AddComponent(component);
     }
 

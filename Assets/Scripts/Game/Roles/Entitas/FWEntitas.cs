@@ -1,8 +1,5 @@
 ﻿using ShipDock.Applications;
 using ShipDock.ECS;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace FWGame
 {
@@ -13,7 +10,7 @@ namespace FWGame
             base.InitComponents();
 
             IShipDockComponent component;
-            var manager = ShipDockApp.AppInstance.Components;
+            var manager = ShipDockApp.Instance.Components;
             int aid;
             int max = ComponentIDs != default ? ComponentIDs.Length : 0;
             for (int i = 0; i < max; i++)

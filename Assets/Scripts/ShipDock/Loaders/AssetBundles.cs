@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ShipDock.Loader
 {
-    public class AssetBundles : IDispose
+    public class AssetBundles : IDispose, IAssetBundles
     {
         public const string ASSET_BUNDLE_MANIFEST = "AssetBundleManifest";
 

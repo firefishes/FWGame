@@ -1,7 +1,6 @@
 ﻿using ShipDock.Applications;
 using ShipDock.Interfaces;
 using ShipDock.Tools;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,9 +21,9 @@ namespace ShipDock.Loader
             mLoader = Loader.GetAssetBundleLoader();
             mLoader.CompletedEvent.AddListener(OnCompleted);
 
-            if (ShipDockApp.AppInstance.IsStarted)
+            if (ShipDockApp.Instance.IsStarted)
             {
-                ABs = ShipDockApp.AppInstance.ABs;
+                ABs = ShipDockApp.Instance.ABs;
             }
             else
             {
@@ -53,13 +52,13 @@ namespace ShipDock.Loader
             return this;
         }
 
-        public AssetsLoader Load(string relativeName, string manifest)
+        public AssetsLoader Add(string relativeName, string manifestName)
         {
             if (mLoader != default)
             {
                 LoaderOpertion opertion = new LoaderOpertion()
                 {
-                    manifestName = manifest,
+                    manifestName = manifestName,
                     relativeName = relativeName,
                     isManifest = true,
                 };
@@ -68,7 +67,7 @@ namespace ShipDock.Loader
             return this;
         }
 
-        public AssetsLoader Load(string relativeName, bool isDependenciesLoader = true)
+        public AssetsLoader Add(string relativeName, bool isDependenciesLoader = true)
         {
             if(mLoader != default)
             {
@@ -85,33 +84,40 @@ namespace ShipDock.Loader
         public void Load(out int statu)
         {
             statu = 0;
-            if ((mOpertions != default) && (mOpertions.Count > 0) && (mCurrentOption == default))
+            if (mCurrentOption == default)
             {
-                mCurrentOption = mOpertions.Dequeue();
-
-                string source = mCurrentOption.relativeName;
-                if (mCurrentOption.isGetDependencies)
+                if ((mOpertions != default) && (mOpertions.Count > 0))
                 {
-                    string[] list = AessetManifest.GetDirectDependencies(source);
-                    if(mDependences != default)
+                    mCurrentOption = mOpertions.Dequeue();
+
+                    string source = mCurrentOption.relativeName;
+                    if (mCurrentOption.isGetDependencies)
                     {
-                        Utils.Reclaim(ref mDependences);
-                    }
-                    mIndex = 0;
-                    mDependences = new List<string>(list)
+                        string[] list = AessetManifest.GetDirectDependencies(source);
+                        if (mDependences != default)
+                        {
+                            Utils.Reclaim(ref mDependences);
+                        }
+                        mIndex = 0;
+                        mDependences = new List<string>(list)
                     {
                         source
                     };
 
-                    source = mDependences[mIndex];
-                    source = AppPaths.StreamingResDataRoot.Append(source);//TODO 根据版本号决定是缓存目录还是项目目录获取
-                    mIndex++;
+                        source = mDependences[mIndex];
+                        source = AppPaths.StreamingResDataRoot.Append(source);//TODO 根据版本号决定是缓存目录还是项目目录获取
+                        mIndex++;
+                    }
+                    else if (!mCurrentOption.isManifest)
+                    {
+                        source = mCurrentOption.url;
+                    }
+                    mLoader.Load(source);
                 }
-                else if(!mCurrentOption.isManifest)
+                else
                 {
-                    source = mCurrentOption.url;
+                    statu = 2;
                 }
-                mLoader.Load(source);
             }
             else
             {
@@ -143,7 +149,7 @@ namespace ShipDock.Loader
             }
 
             Load(out int statu);
-            if(statu == 1)
+            if(statu == 2)
             {
                 CompleteEvent?.Invoke(true, mLoader);
             }
@@ -158,6 +164,7 @@ namespace ShipDock.Loader
 
         private void GetNextDependencies(ref Loader target)
         {
+            Debug.Log("Loader complete and get dependency: " + target.Assets);
             ABs.Add(target.Assets);
             if(mIndex < mDependences.Count)
             {

@@ -12,15 +12,6 @@ namespace ShipDock.Applications
 {
     public class ShipDockApp : Singletons<ShipDockApp>
     {
-
-        public static ShipDockApp AppInstance
-        {
-            get
-            {
-                return Instance;
-            }
-        }
-
         public static void StartUp(int ticks, Action onStartUp = default)
         {
             if (onStartUp != default)

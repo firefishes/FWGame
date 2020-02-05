@@ -70,9 +70,10 @@ namespace FWGame
                 AssetsLoader assetsLoader = new AssetsLoader();
                 assetsLoader.CompleteEvent.AddListener(OnComplete);
                 assetsLoader
-                    .Load(AppPaths.StreamingResDataRoot.Append("ResData"), "ResData/ResData")
-                    .Load("roles/bananarole")
-                    .Load(out _);//.Append("roles/bananarole"));
+                    .Add(AppPaths.StreamingResDataRoot.Append("res_data"), "res_data/res_data")
+                    .Add("res_brigdes")
+                    .Add("roles/banana_role")
+                    .Load(out _);
             }
         }
 
@@ -102,7 +103,7 @@ namespace FWGame
 
         private void OnComplete(bool arg0, Loader arg1)
         {
-            Debug.Log(arg0 + " " + arg1.Assets);
+            Debug.Log("Asset load finished");
         }
 
         private void OnDestroy()

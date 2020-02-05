@@ -19,7 +19,7 @@ namespace ShipDock.Applications
             {
                 mDataCached = new KeyValueList<int, IData>();
             }
-            ShipDockApp app = ShipDockApp.AppInstance;
+            ShipDockApp app = ShipDockApp.Instance;
             int max = ComponentNames.Length;
             int name;
             var components = app.Components;

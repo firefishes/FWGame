@@ -31,7 +31,7 @@ namespace FWGame
         {
             base.InitServer();
             
-            ShipDockApp app = ShipDockApp.AppInstance;
+            ShipDockApp app = ShipDockApp.Instance;
             var datas = app.Datas;
             datas.AddData(new FWGameData());
 

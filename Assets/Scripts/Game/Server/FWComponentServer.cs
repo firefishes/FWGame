@@ -14,7 +14,7 @@ namespace FWGame
         {
             base.InitServer();
 
-            ShipDockApp app = ShipDockApp.AppInstance;
+            ShipDockApp app = ShipDockApp.Instance;
             var components = app.Components;
             components.CreateComponent<RoleMustComponent>(FWConsts.COMPONENT_ROLE_MUST);
             components.CreateComponent<RoleCampComponent>(FWConsts.COMPONENT_ROLE_CAMP);
