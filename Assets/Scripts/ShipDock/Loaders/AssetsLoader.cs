@@ -39,7 +39,7 @@ namespace ShipDock.Loader
             mLoader = default;
         }
 
-        public AssetsLoader LoadRemote(string url)
+        public AssetsLoader AddRemote(string url)
         {
             if (mLoader != default)
             {

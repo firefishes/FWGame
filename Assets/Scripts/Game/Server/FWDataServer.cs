@@ -16,13 +16,13 @@ namespace FWGame
             mRelater = new ServerRelater
             {
                 DataNames = new int[]
-            {
-                FWConsts.DATA_GAME
-            },
+                {
+                    FWConsts.DATA_GAME
+                },
                 ComponentNames = new int[]
-            {
-                FWConsts.COMPONENT_ROLE_CAMP
-            }
+                {
+                    FWConsts.COMPONENT_ROLE_CAMP
+                }
             };
 
         }

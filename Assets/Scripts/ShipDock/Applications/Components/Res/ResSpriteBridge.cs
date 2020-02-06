@@ -12,6 +12,14 @@ namespace ShipDock.Applications
             Texture = Sprite.texture;
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            Sprite = default;
+            Texture = default;
+        }
+
         public Sprite Sprite { get; private set; }
         public Texture Texture { get; private set; }
     }

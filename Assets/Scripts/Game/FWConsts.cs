@@ -23,5 +23,9 @@ namespace FWGame
         public const int DATA_GAME = 1;
 
         public const int DC_CAMP_ROLE_CREATED = 2000;
+
+        public const string ASSET_RES_DATA = "res_data/res_data";
+        public const string ASSET_RES_BRIGEDS = "res_brigdes";
+        public const string ASSET_BANANA_ROLE = "roles/banana_role";
     }
 }

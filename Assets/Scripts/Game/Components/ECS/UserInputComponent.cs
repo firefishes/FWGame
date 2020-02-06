@@ -32,7 +32,10 @@ namespace FWGame
             {
                 CheckUserInput();
             }
-            
+            if(mRoleInput == default)
+            {
+                return;
+            }
             switch(mRoleInput.RoleMovePhase)
             {
                 case ROLE_INPUT_PHASE_MOVE_READY:

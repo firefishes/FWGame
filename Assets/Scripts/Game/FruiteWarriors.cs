@@ -62,17 +62,13 @@ namespace FWGame
             if(ShipDockApp.Instance.Servers.IsServersReady)
             {
                 UpdaterNotice.RemoveSceneUpdater(updater);
-
-                //Loader loader = new Loader();
-                //loader.CompletedEvent.AddListener(OnComplete);
-                //loader.Load("https://gc-game-test-ufile.greencheng.com/20180731/AB_Res/res/map_5_6/main_thread_game_5_6.ab/f51f7c92c50c0b49e6a213b21a5e79dc.ab");
-
+                
                 AssetsLoader assetsLoader = new AssetsLoader();
-                assetsLoader.CompleteEvent.AddListener(OnComplete);
+                assetsLoader.CompleteEvent.AddListener(OnPreloadComplete);
                 assetsLoader
-                    .Add(AppPaths.StreamingResDataRoot.Append("res_data"), "res_data/res_data")
-                    .Add("res_brigdes")
-                    .Add("roles/banana_role")
+                    .Add(AppPaths.StreamingResDataRoot.Append(AppPaths.resData), FWConsts.ASSET_RES_DATA)
+                    .Add(FWConsts.ASSET_RES_BRIGEDS)
+                    .Add(FWConsts.ASSET_BANANA_ROLE)
                     .Load(out _);
             }
         }
@@ -101,9 +97,16 @@ namespace FWGame
 
         }
 
-        private void OnComplete(bool arg0, Loader arg1)
+        private void OnPreloadComplete(bool successed, Loader target)
         {
-            Debug.Log("Asset load finished");
+            AssetBundles ABs = ShipDockApp.Instance.ABs;
+            GameObject prefab = ABs.Get(FWConsts.ASSET_RES_BRIGEDS, "BananaRoleRes");
+            GameObject role;
+            int max = 5;
+            for (int i = 0; i < max; i++)
+            {
+                role = Instantiate(prefab);
+            }
         }
 
         private void OnDestroy()

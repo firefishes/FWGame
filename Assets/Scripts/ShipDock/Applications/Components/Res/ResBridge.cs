@@ -15,6 +15,11 @@ namespace ShipDock.Applications
             Assets = ShipDockApp.Instance.ABs;
         }
 
+        protected virtual void OnDestroy()
+        {
+            Assets = default;
+        }
+
         protected IAssetBundles Assets { get; set; }
     }
 

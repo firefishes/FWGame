@@ -43,5 +43,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cb822559ed7cae4eb69fbae8e673704, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ABName: roles/bananarole
-  m_AssetName: Role
+  m_ABName: roles/banana_role
+  m_AssetName: BananaRole

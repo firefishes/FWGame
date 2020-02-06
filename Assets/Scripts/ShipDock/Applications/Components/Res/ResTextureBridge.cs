@@ -11,6 +11,13 @@ namespace ShipDock.Applications
             Texture = Assets.Get<Texture>(m_ABName, m_AssetName);
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            Texture = default;
+        }
+
         public Texture Texture { get; private set; }
     }
 }
