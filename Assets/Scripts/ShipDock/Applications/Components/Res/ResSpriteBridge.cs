@@ -8,8 +8,11 @@ namespace ShipDock.Applications
         {
             base.Awake();
 
-            Sprite = Assets.Get<Sprite>(m_ABName, m_AssetName);
-            Texture = Sprite.texture;
+            if(m_Asset != default)
+            {
+                Sprite = Assets.Get<Sprite>(m_Asset.GetABName(), m_Asset.GetAssetName());
+                Texture = Sprite.texture;
+            }
         }
 
         protected override void OnDestroy()

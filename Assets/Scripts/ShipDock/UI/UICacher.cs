@@ -39,7 +39,7 @@ namespace ShipDock.UI
             {
                 result = new T();
                 result.Init();
-                mUICached[result.UIName] = result;
+                mUICached[result.Name] = result;
                 AddStack(result);
             }
             return result;
@@ -85,7 +85,7 @@ namespace ShipDock.UI
             {
                 item = (isCheckValid && (mUIStacks.Count > 0)) ? mUIStacks.Peek() : default;
             }
-            return (item != default) && (target != default) && item.UIName.Equals(target.UIName);
+            return (item != default) && (target != default) && item.Name.Equals(target.Name);
         }
 
         private void CheckStackCurrentValid(ref IUIStack item)

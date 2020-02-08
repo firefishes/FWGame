@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace FWGame
+﻿namespace FWGame
 {
     public static class FWConsts
     {
@@ -27,5 +23,13 @@ namespace FWGame
         public const string ASSET_RES_DATA = "res_data/res_data";
         public const string ASSET_RES_BRIGEDS = "res_brigdes";
         public const string ASSET_BANANA_ROLE = "roles/banana_role";
+        public const string ASSET_UI_ROLE_CHOOSER = "ui/ui_role_chooser";
+        public const string ASSET_UI_MAIN = "ui/ui_main";
+
+        public const string UIM_ROLE_CHOOSER = "RoleChooser";
+        //public const string UIM_DUAL_TOUCH_CONTROLS = "DualTouchControls";
+
+        public const string UI_NAME_ROLE_CHOOSER = "UIRoleChooser";
+        //public const string UI_NAME_DUAL_TOUCH_CONTROLS = "DualTouchControls";
     }
 }

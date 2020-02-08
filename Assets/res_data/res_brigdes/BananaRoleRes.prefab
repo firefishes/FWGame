@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8470703709935612719}
   - component: {fileID: 5587546225965339520}
   m_Layer: 0
-  m_Name: RoleRes
+  m_Name: BananaRoleRes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,3 +45,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ABName: roles/banana_role
   m_AssetName: BananaRole
+  m_Asset:
+    m_ABName: roles/banana_role
+    m_AssetName: BananaRole

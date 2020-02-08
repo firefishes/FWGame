@@ -86,43 +86,67 @@ namespace ShipDock.Loader
             statu = 0;
             if (mCurrentOption == default)
             {
-                if ((mOpertions != default) && (mOpertions.Count > 0))
-                {
-                    mCurrentOption = mOpertions.Dequeue();
-
-                    string source = mCurrentOption.relativeName;
-                    if (mCurrentOption.isGetDependencies)
-                    {
-                        string[] list = AessetManifest.GetDirectDependencies(source);
-                        if (mDependences != default)
-                        {
-                            Utils.Reclaim(ref mDependences);
-                        }
-                        mIndex = 0;
-                        mDependences = new List<string>(list)
-                    {
-                        source
-                    };
-
-                        source = mDependences[mIndex];
-                        source = AppPaths.StreamingResDataRoot.Append(source);//TODO 根据版本号决定是缓存目录还是项目目录获取
-                        mIndex++;
-                    }
-                    else if (!mCurrentOption.isManifest)
-                    {
-                        source = mCurrentOption.url;
-                    }
-                    mLoader.Load(source);
-                }
-                else
-                {
-                    statu = 2;
-                }
+                LoadDependeceItem(out statu);
             }
             else
             {
                 statu = 1;
             }
+        }
+
+        private void LoadDependeceItem(out int statu)
+        {
+            statu = 0;
+            if ((mOpertions != default) && (mOpertions.Count > 0))
+            {
+                mCurrentOption = mOpertions.Dequeue();
+
+                string source = mCurrentOption.relativeName;
+                if (mCurrentOption.isGetDependencies)
+                {
+                    InitDependencesList(source);
+                    mIndex = 0;
+                    source = GetValidSourceByIndex(ref source);
+                    mIndex++;
+                }
+                else if (!mCurrentOption.isManifest)
+                {
+                    source = mCurrentOption.url;
+                }
+                mLoader.Load(source);
+            }
+            else
+            {
+                statu = 2;
+            }
+        }
+
+        private void InitDependencesList(string source)
+        {
+            string[] list = AessetManifest.GetDirectDependencies(source);
+            if (mDependences != default)
+            {
+                Utils.Reclaim(ref mDependences);
+            }
+            mDependences = new List<string>(list)
+            {
+                source
+            };
+        }
+
+        private string GetValidSourceByIndex(ref string source)
+        {
+            source = mDependences[mIndex];
+            if (ABs.HasBundel(source))
+            {
+                mIndex++;
+                source = GetValidSourceByIndex(ref source);
+            }
+            else
+            {
+                source = AppPaths.StreamingResDataRoot.Append(source);//TODO 根据版本号决定是缓存目录还是项目目录获取
+            }
+            return source;
         }
 
         private void OnCompleted(bool isSuccessd, Loader target)
@@ -131,6 +155,15 @@ namespace ShipDock.Loader
             {
                 LoadSuccessd(ref target);
             }
+            else
+            {
+                LoadFailed(ref target);
+            }
+        }
+
+        private void LoadFailed(ref Loader target)
+        {
+            CompleteEvent?.Invoke(false, mLoader);
         }
 
         private void LoadSuccessd(ref Loader target)
@@ -141,7 +174,7 @@ namespace ShipDock.Loader
             }
             else if(mCurrentOption.isGetDependencies)
             {
-                GetNextDependencies(ref target);
+                GetNextDependenced(ref target);
             }
             else
             {
@@ -162,15 +195,22 @@ namespace ShipDock.Loader
             mCurrentOption = default;
         }
 
-        private void GetNextDependencies(ref Loader target)
+        private void GetNextDependenced(ref Loader target)
         {
             Debug.Log("Loader complete and get dependency: " + target.Assets);
             ABs.Add(target.Assets);
             if(mIndex < mDependences.Count)
             {
                 string source = mDependences[mIndex];
-                mLoader.Load(AppPaths.StreamingResDataRoot.Append(source));//TODO 根据版本号决定是缓存目录还是项目目录获取
                 mIndex++;
+                if(ABs.HasBundel(source))
+                {
+                    GetNextDependenced(ref target);
+                }
+                else
+                {
+                    mLoader.Load(AppPaths.StreamingResDataRoot.Append(source));//TODO 根据版本号决定是缓存目录还是项目目录获取
+                }
             }
             else
             {

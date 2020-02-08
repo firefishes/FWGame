@@ -12,5 +12,6 @@
         bool IsExited { get; }
         bool IsStackAdvanced { get; }
         string UIName { get; }
+        string Name { get; }
     }
 }

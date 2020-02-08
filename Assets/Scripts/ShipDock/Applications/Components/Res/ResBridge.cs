@@ -1,4 +1,5 @@
 ﻿using ShipDock.Loader;
+using ShipDock.Tools;
 using UnityEngine;
 
 namespace ShipDock.Applications
@@ -6,9 +7,7 @@ namespace ShipDock.Applications
     public class ResBridge : MonoBehaviour, IResBridge
     {
         [SerializeField]
-        protected string m_ABName;
-        [SerializeField]
-        protected string m_AssetName;
+        protected AssetSubgroup m_Asset;
 
         protected virtual void Awake()
         {

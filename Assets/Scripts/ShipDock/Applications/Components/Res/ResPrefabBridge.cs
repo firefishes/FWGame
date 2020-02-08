@@ -8,8 +8,11 @@ namespace ShipDock.Applications
         {
             base.Awake();
 
-            GameObject source = Assets.Get(m_ABName, m_AssetName);
-            Prefab = Instantiate(source);
+            if(m_Asset != default)
+            {
+                GameObject source = Assets.Get(m_Asset.GetABName(), m_Asset.GetAssetName());
+                Prefab = Instantiate(source);
+            }
         }
 
         protected override void OnDestroy()

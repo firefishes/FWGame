@@ -93,8 +93,8 @@ MonoBehaviour:
   m_OnAwaked:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: ShipDock.UI.UIRoot+OnUIRootAwaked, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
+    m_TypeName: ShipDock.UI.OnUIRootAwaked, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &4856215875102154114
 GameObject:
   m_ObjectHideFlags: 0

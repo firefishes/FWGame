@@ -1,4 +1,6 @@
-﻿using ShipDock.Datas;
+﻿using System;
+using System.Collections.Generic;
+using ShipDock.Datas;
 using ShipDock.Tools;
 
 namespace FWGame
@@ -24,6 +26,11 @@ namespace FWGame
             mCampRoleMapper[key] = model;
 
             DataChanged(FWConsts.DC_CAMP_ROLE_CREATED);
+        }
+
+        public List<CampRoleModel> GetCampRoleModels()
+        {
+            return (mCampRoleMapper != default) ? mCampRoleMapper.Values : default;
         }
     }
 }

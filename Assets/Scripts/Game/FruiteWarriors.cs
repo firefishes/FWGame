@@ -17,14 +17,14 @@ namespace FWGame
 
         private MethodUpdater updater;
 
-        void Start()
-        {
-            ShipDockApp.StartUp(120, OnShipDockStart);
-        }
-
         public void UIRootAwaked(IUIRoot root)
         {
             ShipDockApp.Instance.InitUIRoot(root);
+        }
+
+        void Start()
+        {
+            ShipDockApp.StartUp(120, OnShipDockStart);
         }
 
         private void OnShipDockStart()
@@ -67,10 +67,28 @@ namespace FWGame
                 assetsLoader.CompleteEvent.AddListener(OnPreloadComplete);
                 assetsLoader
                     .Add(AppPaths.StreamingResDataRoot.Append(AppPaths.resData), FWConsts.ASSET_RES_DATA)
+                    //.Add(FWConsts.ASSET_UI_MAIN)
+                    .Add(FWConsts.ASSET_UI_ROLE_CHOOSER)
                     .Add(FWConsts.ASSET_RES_BRIGEDS)
                     .Add(FWConsts.ASSET_BANANA_ROLE)
                     .Load(out _);
             }
+        }
+
+        private void OnPreloadComplete(bool successed, Loader target)
+        {
+            AssetBundles ABs = ShipDockApp.Instance.ABs;
+            GameObject prefab = ABs.Get(FWConsts.ASSET_RES_BRIGEDS, "BananaRoleRes");
+            GameObject role;
+            int max = 5;
+            for (int i = 0; i < max; i++)
+            {
+                role = Instantiate(prefab);
+            }
+
+            UIManager uis = ShipDockApp.Instance.UIs;
+            uis.Open<RoleChooser>(FWConsts.UI_NAME_ROLE_CHOOSER);
+            //uis.Open<DualToucher>(FWConsts.UI_NAME_DUAL_TOUCH_CONTROLS);
         }
 
         private void OnServersInit()
@@ -95,18 +113,6 @@ namespace FWGame
             Debug.Log(notice.Name);
             #endregion
 
-        }
-
-        private void OnPreloadComplete(bool successed, Loader target)
-        {
-            AssetBundles ABs = ShipDockApp.Instance.ABs;
-            GameObject prefab = ABs.Get(FWConsts.ASSET_RES_BRIGEDS, "BananaRoleRes");
-            GameObject role;
-            int max = 5;
-            for (int i = 0; i < max; i++)
-            {
-                role = Instantiate(prefab);
-            }
         }
 
         private void OnDestroy()

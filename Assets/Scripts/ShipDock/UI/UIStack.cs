@@ -39,6 +39,7 @@
 
         public bool IsExited { get; private set; }
         public bool IsStackAdvanced { get; private set; }
-        public virtual string UIName { get; private set; }
+        public virtual string UIName { get; protected set; }
+        public virtual string Name { get; protected set; }
     }
 }

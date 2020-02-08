@@ -28,13 +28,17 @@ public static class ShipDockAppExtension
 
     public static void Dispatch(this int noticeName, INoticeBase<int> notice = default)
     {
-        if (notice == default)
+        bool defaultNotice = notice == default;
+        if (defaultNotice)
         {
             notice = new Notice();
         }
         notice.SetNoticeName(noticeName);
         ShipDockApp.Instance.Notificater?.SendNotice(notice);
-        notice.Dispose();
+        if(defaultNotice)
+        {
+            notice.Dispose();
+        }
     }
 
     public static T GetServer<T>(this string serverName) where T : IServer

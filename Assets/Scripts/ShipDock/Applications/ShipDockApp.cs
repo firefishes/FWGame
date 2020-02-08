@@ -2,6 +2,7 @@
 using ShipDock.ECS;
 using ShipDock.Loader;
 using ShipDock.Notices;
+using ShipDock.Pooling;
 using ShipDock.Server;
 using ShipDock.Testers;
 using ShipDock.Tools;
@@ -48,6 +49,7 @@ namespace ShipDock.Applications
             Servers = new Servers();
             Servers.OnInit += OnCreateComponentManager;
             Datas = new DataWarehouse();
+            AssetsPooling = new AssetsPooling();
 
             if (ticks > 0)
             {
@@ -134,5 +136,6 @@ namespace ShipDock.Applications
         public Servers Servers { get; private set; }
         public DataWarehouse Datas { get; private set; }
         public AssetBundles ABs { get; private set; }
+        public AssetsPooling AssetsPooling { get; private set; }
     }
 }

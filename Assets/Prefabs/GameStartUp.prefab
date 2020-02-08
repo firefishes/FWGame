@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 698715321385314095}
   - component: {fileID: 698715321385314088}
   - component: {fileID: 698715321385314094}
+  - component: {fileID: 1546450400584987312}
   m_Layer: 0
   m_Name: GameStartUp
   m_TagString: Untagged
@@ -59,3 +60,15 @@ MonoBehaviour:
   m_ReadyNoticeName: -1007
   m_AddItemNoticeName: -1005
   m_RemoveItemNoticeName: -1006
+--- !u!114 &1546450400584987312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 698715321385314089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30ba061e1b2c80542b2ab7601ee0dd26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

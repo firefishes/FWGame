@@ -8,7 +8,10 @@ namespace ShipDock.Applications
         {
             base.Awake();
 
-            Texture = Assets.Get<Texture>(m_ABName, m_AssetName);
+            if(m_Asset != default)
+            {
+                Texture = Assets.Get<Texture>(m_Asset.GetABName(), m_Asset.GetAssetName());
+            }
         }
 
         protected override void OnDestroy()
