@@ -41,6 +41,7 @@ namespace FWGame
         public float StationaryTurnSpeed { get; set; }
         public float GravityMultiplier { get; set; }
         public float JumpPower { get; set; }
+        public int ConfigID { get; set; }
     }
 }
 

@@ -1,7 +1,4 @@
 ﻿using ShipDock.ECS;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace FWGame

@@ -63,7 +63,7 @@ namespace ShipDock.Server
             }
         }
 
-        public void SetResolver<InterfaceT>(string resolverName, ResolveDelegate<InterfaceT> resolveDelgate, out int statu)
+        public void SetResolver<InterfaceT>(string resolverName, ResolveDelegate<InterfaceT> resolveDelgate, out int statu, bool onlyOnce = false)
         {
             statu = 0;
             bool hasRef = mResolverIDMapper.ContainsKey(ref resolverName, out int index);
@@ -75,6 +75,7 @@ namespace ShipDock.Server
             {
                 ResolverHandler<InterfaceT> handler = new ResolverHandler<InterfaceT>();
                 handler.SetDelegate(resolveDelgate);
+                handler.OnlyOnce = onlyOnce;
                 mResolvers.Add(handler);
 
                 mResolverIDMapper.Add(resolverName, out _);

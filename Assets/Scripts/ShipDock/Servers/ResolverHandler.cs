@@ -32,6 +32,7 @@
 
         public ResolveDelegate<InterfaceT> DelegateTarget { get; private set; }
         public object ResolverParam { get; set; }
+        public bool OnlyOnce { get; set; }
     }
 
 }

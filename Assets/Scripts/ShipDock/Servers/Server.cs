@@ -41,7 +41,7 @@ namespace ShipDock.Server
             return Resolve<InterfaceT>(alias, resolverName);
         }
         
-        public void Add<InterfaceT>(ResolveDelegate<InterfaceT> target)
+        public void Add<InterfaceT>(ResolveDelegate<InterfaceT> target, bool onlyOnce = false)
         {
             int statu = 0;
 
@@ -61,7 +61,7 @@ namespace ShipDock.Server
                 resolvable = ServersHolder.GetResolvable(ref alias, out int resultError);
                 if (resultError == 0)
                 {
-                    resolvable.SetResolver(resolverName, target, out statu);
+                    resolvable.SetResolver(resolverName, target, out statu, onlyOnce);
                 }
             }
         }

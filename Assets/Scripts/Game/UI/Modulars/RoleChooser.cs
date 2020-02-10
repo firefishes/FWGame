@@ -12,6 +12,8 @@ namespace FWGame
 
             FWGameData gameData = Datas.GetData<FWGameData>(FWConsts.DATA_GAME);
             gameData.Register(this);
+
+            OnDataChanged(gameData, FWConsts.DC_CAMP_ROLE_CREATED);
         }
 
         public void OnDataChanged(IData data, int keyName)

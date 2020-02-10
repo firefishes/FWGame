@@ -7,5 +7,6 @@ namespace ShipDock.Server
         void InvokeResolver();
         void SetParam<T>(ref T param);
         object ResolverParam { get; }
+        bool OnlyOnce { get; set; }
     }
 }

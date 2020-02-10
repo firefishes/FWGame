@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 243893404177751307}
   - component: {fileID: 2925204725951766026}
   - component: {fileID: 7060205281426100886}
+  - component: {fileID: 3786758998385365891}
   m_Layer: 5
   m_Name: RoleCard
   m_TagString: Untagged
@@ -65,7 +66,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 86a38165cd41c954b8b2218c4110f689, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -74,3 +75,16 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &3786758998385365891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4751428802724022275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4ab994deb063ae4a9f462c9e30651f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RoleCardImage: {fileID: 7060205281426100886}

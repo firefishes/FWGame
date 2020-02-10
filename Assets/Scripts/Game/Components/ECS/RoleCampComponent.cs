@@ -87,9 +87,10 @@ namespace FWGame
                 mRoleEntitas = GetEntitas(id) as IFWRole;
                 if ((mRoleEntitas != default) && (mRoleTarget != default))
                 {
-                    if ((mRoleTarget.EnemyMainLockDown == default) &&
-                       (mRoleTarget != mRoleEntitas) &&
-                       (mRoleEntitas.Camp != mRoleTarget.Camp))
+                    if (!mRoleTarget.IsUserControlling &&
+                        (mRoleTarget.EnemyMainLockDown == default) &&
+                        (mRoleTarget != mRoleEntitas) &&
+                        (mRoleEntitas.Camp != mRoleTarget.Camp))
                     {
                         mRoleTarget.FindngPath = true;
                         mRoleTarget.EnemyMainLockDown = mRoleEntitas;

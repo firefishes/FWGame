@@ -24,6 +24,7 @@ namespace FWGame
             
             Register<INotice>(NoticeResolver, Pooling<Notice>.Instance);
             Register<INotice>(GameNoticeResolver, Pooling<GameNotice>.Instance);
+            Register<IParamNotice<FWInputer>>(FWInputerParamerResolver, Pooling<ParamNotice<FWInputer>>.Instance);
         }
 
         [Resolvable("Notice")]
@@ -36,14 +37,29 @@ namespace FWGame
         {
         }
 
+        [Resolvable("FWInputerParamer")]
+        private void FWInputerParamerResolver(ref IParamNotice<FWInputer> target)
+        {
+            target.ParamValue = MainInputer;
+        }
+
         public override void ServerReady()
         {
             base.ServerReady();
 
+            Add<IParamNotice<FWInputer>>(SetFWInputer);
             //SetResolver<INotice>("TestResolver", OnTestResolver);
             //SetResolver<INotice>("TestResolver2", OnTestResolver2);
         }
 
+        [Callable("SetFWInputer", "FWInputerParamer")]
+        private void SetFWInputer<I>(ref I target)
+        {
+            IParamNotice<FWInputer> notice = target as IParamNotice<FWInputer>;
+            MainInputer = notice.ParamValue;
+        }
+
+        private FWInputer MainInputer { get; set; }
     }
 
 }

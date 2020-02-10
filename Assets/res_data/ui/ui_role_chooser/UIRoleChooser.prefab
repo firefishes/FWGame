@@ -30,11 +30,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1648902607433647733}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 3.1e-44, y: 6e-45, z: 3.953e-42}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -77.4, y: 167}
-  m_SizeDelta: {x: 128, y: 195.8}
+  m_AnchoredPosition: {x: -87.4, y: 478.3}
+  m_SizeDelta: {x: 174.8, y: 759.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3286767251886661485
 MonoBehaviour:
@@ -54,7 +54,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 2
+  m_Spacing: 25
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -117,5 +117,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: decfbf78ef04043409edeaff6abefe35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UIRoleCardRaw: {fileID: 4751428802724022275, guid: 8ff5fb49a4cd7b34685afc0a3007315e,
+  m_UIRoleCardRaw: {fileID: 3786758998385365891, guid: 8ff5fb49a4cd7b34685afc0a3007315e,
     type: 3}
+  m_UIRoleCardList: {fileID: 1812917459090044895}

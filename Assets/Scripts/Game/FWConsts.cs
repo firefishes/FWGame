@@ -15,6 +15,7 @@
         public const int COMPONENT_ROLE_CONTROLLABLE = 7;
 
         public const int NOTICE_GET_ROLE_WHEN_CREATE = 1000;
+        public const int NOTICE_GET_GAME_INPUTER = 1001;
 
         public const int DATA_GAME = 1;
 
@@ -31,5 +32,7 @@
 
         public const string UI_NAME_ROLE_CHOOSER = "UIRoleChooser";
         //public const string UI_NAME_DUAL_TOUCH_CONTROLS = "DualTouchControls";
+
+        public const int POOL_UI_ROLE_CARD = 0;
     }
 }

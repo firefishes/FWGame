@@ -67,7 +67,7 @@ namespace FWGame
                 assetsLoader.CompleteEvent.AddListener(OnPreloadComplete);
                 assetsLoader
                     .Add(AppPaths.StreamingResDataRoot.Append(AppPaths.resData), FWConsts.ASSET_RES_DATA)
-                    //.Add(FWConsts.ASSET_UI_MAIN)
+                    .Add(FWConsts.ASSET_UI_MAIN)
                     .Add(FWConsts.ASSET_UI_ROLE_CHOOSER)
                     .Add(FWConsts.ASSET_RES_BRIGEDS)
                     .Add(FWConsts.ASSET_BANANA_ROLE)
@@ -98,7 +98,8 @@ namespace FWGame
             IResolvableConfig[] configs = {
                 new ResolvableConfigItem<INotice, Notice>("Notice"),
                 new ResolvableConfigItem<INotice, GameNotice>("GameNotice"),
-                new ResolvableConfigItem<IParamNotice<IFWRole>, CampRoleNotice>("CampRoleCreated")
+                new ResolvableConfigItem<IParamNotice<IFWRole>, CampRoleNotice>("CampRoleCreated"),
+                new ResolvableConfigItem<IParamNotice<FWInputer>, ParamNotice<FWInputer>>("FWInputerParamer")
             };
             app.Servers.AddResolvableConfig(configs);
         }
