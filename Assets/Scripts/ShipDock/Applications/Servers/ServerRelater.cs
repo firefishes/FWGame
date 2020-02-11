@@ -9,7 +9,7 @@ namespace ShipDock.Applications
         private KeyValueList<int, IData> mDataCached;
         private KeyValueList<int, IShipDockComponent> mCompCached;
 
-        public void CommitCache()
+        public void CommitRelate()
         {
             if (mCompCached == default)
             {

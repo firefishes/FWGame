@@ -43,7 +43,7 @@ namespace FWGame
         {
             base.ServerReady();
             
-            mRelater.CommitCache();
+            mRelater.CommitRelate();
 
             Add<IParamNotice<IFWRole>>(AddCampRole);
         }

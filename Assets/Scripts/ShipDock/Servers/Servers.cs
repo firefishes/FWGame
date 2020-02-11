@@ -347,8 +347,6 @@ namespace ShipDock.Server
             int id;
             string alias;
             IResolvableConfig item;
-            IResolvable resolvable;
-            ResolvableInfo info;
             ResolvableAttribute resolvabler;
             ResolvableBinder resolvableRef = default;
             for (int i = 0; i < max; i++)
@@ -362,12 +360,12 @@ namespace ShipDock.Server
                     item = mResolvableConfigs[id];
                     if (item != default)
                     {
-                        ResolvableInfo.FillResolvableInfo(id, ref item, out info);
+                        ResolvableInfo.FillResolvableInfo(id, ref item, out ResolvableInfo info);
                         CreateOrAddResolvable(ref item, ref info, ref resolvableRef, out statu);
 
                         if (statu == 0)
                         {
-                            statu = CheckAndFillResolvable(ref resolvableRef, out resolvable, target);
+                            statu = CheckAndFillResolvable(ref resolvableRef, out IResolvable resolvable, target);
                             result[i] = resolvable;
                         }
                     }
