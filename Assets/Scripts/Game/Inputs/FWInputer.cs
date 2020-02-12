@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using ShipDock.Applications;
 using ShipDock.Notices;
+using ShipDock.Server;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
@@ -28,7 +29,13 @@ namespace FWGame
             mCompBrigde.Dispose();
             mCompBrigde = default;
 
-            FWConsts.SERVER_FW_DATAS.DeliveParam<FWDataServer, FWInputer>("SetFWInputer", "FWInputerParamer");
+            FWConsts.SERVER_FW_DATAS.DeliveParam<FWDataServer, FWInputer>("SetFWInputer", "SetFWInputerParamer", OnSetFWInputer);
+        }
+
+        [Resolvable("SetFWInputerParamer")]
+        private void OnSetFWInputer(ref IParamNotice<FWInputer> target)
+        {
+            target.ParamValue = this;
         }
 
         private void OnGetInputer(INoticeBase<int> param)

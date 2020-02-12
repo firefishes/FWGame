@@ -8,6 +8,7 @@
 
         public void Dispose()
         {
+            OnlyOnce = false;
             mParamTemp = default;
             ResolverParam = default;
             DelegateTarget = default;
@@ -30,9 +31,15 @@
             ResolverParam = param;
         }
 
+        public void SetID(int id)
+        {
+            ID = id;
+        }
+
         public ResolveDelegate<InterfaceT> DelegateTarget { get; private set; }
         public object ResolverParam { get; set; }
         public bool OnlyOnce { get; set; }
+        public int ID { get; private set; }
     }
 
 }

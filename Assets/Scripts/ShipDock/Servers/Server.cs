@@ -66,6 +66,19 @@ namespace ShipDock.Server
             }
         }
 
+        public ResolveDelegate<InterfaceT> Reregister<InterfaceT>(ResolveDelegate<InterfaceT> target, string alias)
+        {
+            ResolveDelegate<InterfaceT> raw = default;
+            IResolvable resolvable = ServersHolder.GetResolvable(ref alias, out int resultError);
+            if (resultError == 0)
+            {
+                IResolverCacher<InterfaceT> resolverHandler = resolvable.GetResolver<InterfaceT>(Resolvable.RESOLVER_CRT, out _) as IResolverCacher<InterfaceT>;
+                raw = resolverHandler.DelegateTarget;
+                resolverHandler.SetDelegate(target);
+            }
+            return raw;
+        }
+
         public int Register<InterfaceT>(ResolveDelegate<InterfaceT> target, params IPoolBase[] factory)
         {
             IResolvable[] list = ServersHolder.SetResolvable(target, out int statu);
@@ -112,6 +125,10 @@ namespace ShipDock.Server
                     resolverHandler = resolvable.GetResolver<InterfaceT>(resolverName, out _);
                     resolverHandler.SetParam(ref result);
                     resolverHandler.InvokeResolver();
+                    if(resolverHandler.OnlyOnce)
+                    {
+                        resolvable.RemoveResolver<InterfaceT>(resolverName, out _);
+                    }
                 }
             }
             return result;

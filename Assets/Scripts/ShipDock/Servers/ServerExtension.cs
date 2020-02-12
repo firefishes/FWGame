@@ -9,14 +9,20 @@ public static class ServerExtension
         return server.Delive<I>(resolverName, alias);
     }
 
-    public static P DeliveParam<S, P>(this string serverName, string resolverName, string alias, ResolveDelegate<IParamNotice<P>> resolver = default) where S : IServer
+    public static P DeliveParam<S, P>(this string serverName, string resolverName, string alias, ResolveDelegate<IParamNotice<P>> newResolver = default) where S : IServer
     {
         S server = serverName.GetServer<S>();
-        if(resolver != default)
+        IParamNotice<P> notice;
+        if (newResolver != default)
         {
-            server.Add(resolver, true);
+            ResolveDelegate<IParamNotice<P>> raw = server.Reregister(newResolver, alias);
+            notice = server.Delive<IParamNotice<P>>(resolverName, alias);
+            server.Reregister(raw, alias);
         }
-        IParamNotice<P> notice = server.Delive<IParamNotice<P>>(resolverName, alias);
+        else
+        {
+            notice = server.Delive<IParamNotice<P>>(resolverName, alias);
+        }
         return notice.ParamValue;
     }
 }

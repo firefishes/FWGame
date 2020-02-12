@@ -1,8 +1,6 @@
-﻿using System;
-using ShipDock.Notices;
+﻿using ShipDock.Notices;
 using ShipDock.Pooling;
 using ShipDock.Server;
-using UnityEngine;
 
 namespace FWGame
 {
@@ -24,25 +22,25 @@ namespace FWGame
             
             Register<INotice>(NoticeResolver, Pooling<Notice>.Instance);
             Register<INotice>(GameNoticeResolver, Pooling<GameNotice>.Instance);
-            Register<IParamNotice<FWInputer>>(FWInputerParamerResolver, Pooling<ParamNotice<FWInputer>>.Instance);
+            Register<IParamNotice<FWInputer>>(SetFWInputerParamer, Pooling<ParamNotice<FWInputer>>.Instance);
+            Register<IParamNotice<FWInputer>>(GetFWInputerParamer, Pooling<ParamNotice<FWInputer>>.Instance);
         }
 
         [Resolvable("Notice")]
-        private void NoticeResolver(ref INotice target)
-        {
-        }
+        private void NoticeResolver(ref INotice target) { }
 
         [Resolvable("GameNotice")]
-        private void GameNoticeResolver(ref INotice target)
-        {
-        }
+        private void GameNoticeResolver(ref INotice target) { }
+
+        [Resolvable("SetFWInputerParamer")]
+        private void SetFWInputerParamer(ref IParamNotice<FWInputer> target) { }
 
         [Resolvable("FWInputerParamer")]
-        private void FWInputerParamerResolver(ref IParamNotice<FWInputer> target)
+        private void GetFWInputerParamer(ref IParamNotice<FWInputer> target)
         {
             target.ParamValue = MainInputer;
         }
-
+        
         public override void ServerReady()
         {
             base.ServerReady();
@@ -52,7 +50,7 @@ namespace FWGame
             //SetResolver<INotice>("TestResolver2", OnTestResolver2);
         }
 
-        [Callable("SetFWInputer", "FWInputerParamer")]
+        [Callable("SetFWInputer", "SetFWInputerParamer")]
         private void SetFWInputer<I>(ref I target)
         {
             IParamNotice<FWInputer> notice = target as IParamNotice<FWInputer>;

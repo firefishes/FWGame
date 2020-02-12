@@ -1,7 +1,6 @@
 ﻿using ShipDock.Pooling;
 using ShipDock.Tools;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace ShipDock.Server
@@ -14,9 +13,9 @@ namespace ShipDock.Server
         private static readonly Type[] defaultGenericType = new Type[0];
         private static readonly object[] defaultGenericParam = new object[0];
 
+        private KeyValueList<int, IResolverHandler> mResolvers;
         private ConstructorInfo mDefaultConstructorInfo;
         private Func<Type[], ConstructorInfo> mConstructor;
-        private List<IResolverHandler> mResolvers;
         private IntegerMapper<string> mResolverIDMapper;
 
         public void Dispose()
@@ -59,26 +58,42 @@ namespace ShipDock.Server
             if (default == Binder)
             {
                 Binder = target;
-                mResolvers = new List<IResolverHandler>();
+                mResolvers = new KeyValueList<int, IResolverHandler>();
             }
         }
 
         public void SetResolver<InterfaceT>(string resolverName, ResolveDelegate<InterfaceT> resolveDelgate, out int statu, bool onlyOnce = false)
         {
             statu = 0;
-            bool hasRef = mResolverIDMapper.ContainsKey(ref resolverName, out int index);
+            bool hasRef = mResolverIDMapper.ContainsKey(ref resolverName, out _);
             if(hasRef)
             {
                 statu = 1;
             }
             else
             {
+                int id = mResolverIDMapper.Add(resolverName, out _);
                 ResolverHandler<InterfaceT> handler = new ResolverHandler<InterfaceT>();
                 handler.SetDelegate(resolveDelgate);
                 handler.OnlyOnce = onlyOnce;
-                mResolvers.Add(handler);
+                handler.SetID(id);
+                mResolvers[id] = handler;
+            }
+        }
 
-                mResolverIDMapper.Add(resolverName, out _);
+        public void RemoveResolver<InterfaceT>(string resolverName, out int statu)
+        {
+            statu = 0;
+            bool hasRef = mResolverIDMapper.ContainsKey(ref resolverName, out int id);
+            if (hasRef)
+            {
+                IResolverHandler handler = mResolvers.Remove(id);
+                handler.Dispose();
+                mResolverIDMapper.Remove(resolverName, out statu);
+            }
+            else
+            {
+                statu = 1;
             }
         }
 
@@ -86,10 +101,10 @@ namespace ShipDock.Server
         {
             statu = 0;
             IResolverHandler handler = default;
-            bool hasRef = mResolverIDMapper.ContainsKey(ref resolverName, out int index);
+            bool hasRef = mResolverIDMapper.ContainsKey(ref resolverName, out int id);
             if (hasRef)
             {
-                handler = mResolvers[index];
+                handler = mResolvers[id];
             }
             else
             {
