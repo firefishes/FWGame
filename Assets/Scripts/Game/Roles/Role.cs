@@ -110,10 +110,10 @@ namespace FWGame
 
         private void UpdateByPositionComponent()
         {
-            mRole.Direction = transform.forward;
-            mRole.Position = transform.position;
             if (mRole.PositionEnabled)
             {
+                mRole.Direction = transform.forward;
+                mRole.Position = transform.position;
                 if (mRole.FindngPath)
                 {
                     if (mRole.EnemyMainLockDown != default)
@@ -129,6 +129,12 @@ namespace FWGame
                         mRoleInput.move = Vector3.zero;
                     }
                 }
+            }
+            else
+            {
+                Vector3 d = new Vector3(mRoleInput.userInput.x, 0, mRoleInput.userInput.y);
+                mRoleInput.SetMoveValue(d);
+                m_RoleRigidbody.velocity = d * mRole.SpeedCurrent * 10;
             }
         }
 
@@ -214,6 +220,15 @@ namespace FWGame
 
                 UpdateByPositionComponent();
 
+                if(mRole.IsUserControlling)
+                {
+                    transform.localScale = Vector3.one * 1.2f;
+                }
+                else
+                {
+                    transform.localScale = Vector3.one;
+                }
+
                 if (mRoleInput != default)
                 {
                     switch (mRoleInput.RoleMovePhase)
@@ -237,7 +252,14 @@ namespace FWGame
             mRoleInput.deltaTime = Time.deltaTime;
 
             Vector3 v = transform.InverseTransformDirection(mRoleInput.move);
-            mRoleInput.SetMoveValue(v);
+            //if(!mRole.IsUserControlling)
+            //{
+                mRoleInput.SetMoveValue(v);
+            //}
+            if(mRole.IsUserControlling && v != Vector3.zero)
+            {
+                Debug.Log(v);
+            }
 
             CheckGroundStatus();
             mRoleInput.UpdateMovePhase();

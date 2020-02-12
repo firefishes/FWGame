@@ -8,6 +8,7 @@ namespace FWGame
     {
         public float deltaTime;
         public Vector3 move;
+        public Vector3 userInput;
         public bool crouch;
         public bool jump;
         public bool crouching;

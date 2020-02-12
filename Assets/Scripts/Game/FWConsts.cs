@@ -1,4 +1,7 @@
-﻿namespace FWGame
+﻿using ShipDock.Notices;
+using ShipDock.Server;
+
+namespace FWGame
 {
     public static class FWConsts
     {
@@ -34,5 +37,14 @@
         //public const string UI_NAME_DUAL_TOUCH_CONTROLS = "DualTouchControls";
 
         public const int POOL_UI_ROLE_CARD = 0;
+
+        public static readonly IResolvableConfig[] ServerConfigs = {
+            new ResolvableConfigItem<INotice, Notice>("Notice"),
+            new ResolvableConfigItem<INotice, GameNotice>("GameNotice"),
+            new ResolvableConfigItem<IParamNotice<IFWRole>, CampRoleNotice>("CampRoleCreated"),
+            new ResolvableConfigItem<IParamNotice<FWInputer>, ParamNotice<FWInputer>>("FWInputerParamer"),
+            new ResolvableConfigItem<IParamNotice<FWInputer>, ParamNotice<FWInputer>>("SetFWInputerParamer"),
+            new ResolvableConfigItem<IParamNotice<IFWRole>, ParamNotice<IFWRole>>("SetUserFWRole")
+         };
     }
 }

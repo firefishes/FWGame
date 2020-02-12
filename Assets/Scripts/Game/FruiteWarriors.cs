@@ -1,7 +1,6 @@
 ﻿
 #define G_LOG
 
-using System;
 using ShipDock.Applications;
 using ShipDock.Loader;
 using ShipDock.Notices;
@@ -94,15 +93,7 @@ namespace FWGame
         private void OnServersInit()
         {
             ShipDockApp app = ShipDockApp.Instance;
-
-            IResolvableConfig[] configs = {
-                new ResolvableConfigItem<INotice, Notice>("Notice"),
-                new ResolvableConfigItem<INotice, GameNotice>("GameNotice"),
-                new ResolvableConfigItem<IParamNotice<IFWRole>, CampRoleNotice>("CampRoleCreated"),
-                new ResolvableConfigItem<IParamNotice<FWInputer>, ParamNotice<FWInputer>>("FWInputerParamer"),
-                new ResolvableConfigItem<IParamNotice<FWInputer>, ParamNotice<FWInputer>>("SetFWInputerParamer")
-            };
-            app.Servers.AddResolvableConfig(configs);
+            app.Servers.AddResolvableConfig(FWConsts.ServerConfigs);
         }
 
         private void OnFinished()

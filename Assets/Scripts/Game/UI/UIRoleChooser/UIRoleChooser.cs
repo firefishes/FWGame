@@ -1,5 +1,8 @@
-﻿using ShipDock.Tools;
+﻿using ShipDock.Notices;
+using ShipDock.Server;
+using ShipDock.Tools;
 using ShipDock.UI;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,8 +34,8 @@ namespace FWGame
                     {
                         roleCard = UIPooling.FromComponentPool(FWConsts.POOL_UI_ROLE_CARD, ref m_UIRoleCardRaw);
                         roleCard.RoleCardData = item;
-                        roleCard.RoleCardSelectedEvent.AddListener(OnRoleCardSelectedHandler);
                         roleCard.SetParent(m_UIRoleCardList);
+                        roleCard.RoleCardSelectedEvent.AddListener(OnRoleCardSelectedHandler);
                     }
                 }
             }
@@ -47,6 +50,13 @@ namespace FWGame
             }
             SelectedRoleModel = target;
             SelectedRoleModel.SetUserControll(true);
+
+            //FWConsts.SERVER_FW.DeliveParam<FWComponentServer, IFWRole>("SetUserFWRole", "SetUserFWRole", OnSetUserFWRole);
+        }
+
+        [Resolvable("SetUserFWRole")]
+        private void OnSetUserFWRole(ref IParamNotice<IFWRole> target)
+        {
         }
 
         public KeyValueList<int, UIRoleCard> RoleCardMapper { get; private set; } = new KeyValueList<int, UIRoleCard>();

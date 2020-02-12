@@ -15,6 +15,8 @@ namespace FWGame
         private TouchPad m_Mover;
         [SerializeField]
         private TouchPad m_TurnAndLooker;
+        [SerializeField]
+        private MobileControlRig m_MobileControlRig;
 
         private ComponentBridge mCompBrigde;
 
@@ -57,6 +59,14 @@ namespace FWGame
             get
             {
                 return m_TurnAndLooker;
+            }
+        }
+
+        public MobileControlRig MobileControlRig
+        {
+            get
+            {
+                return m_MobileControlRig;
             }
         }
     }

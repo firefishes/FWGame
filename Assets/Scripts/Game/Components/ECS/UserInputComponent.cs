@@ -1,5 +1,7 @@
-﻿using ShipDock.ECS;
+﻿using ShipDock.Applications;
+using ShipDock.ECS;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
 namespace FWGame
 {
@@ -15,6 +17,20 @@ namespace FWGame
         private RoleData mRoleData;
         private RoleAnimatorInfo mAnimatorInfo;
         private FWRoleInput mRoleInput;
+        private ServerRelater mRelater;
+
+        public override void Init()
+        {
+            base.Init();
+
+            mRelater = new ServerRelater()
+            {
+                ServerNames = new string[]
+                {
+                    FWConsts.SERVER_FW
+                }
+            };
+        }
 
         public override void Execute(int time, ref IShipDockEntitas target)
         {
@@ -56,8 +72,25 @@ namespace FWGame
 
         private void CheckUserInput()
         {
-
+            if(MainInputer == default)
+            {
+                mRelater.CommitRelate();
+                FWServer server = mRelater.ServerRef<FWServer>(FWConsts.SERVER_FW);
+                MainInputer = server.MainInputer;
+            }
+            float x = CrossPlatformInputManager.GetAxis("Horizontal");
+            float y = CrossPlatformInputManager.GetAxis("Vertical");
+            Vector3 m = new Vector3(x, y);
+            mRoleItem.EnemyMainLockDown = default;
+            mRoleInput.userInput = m;
+            //mRoleInput.move = Vector3.ProjectOnPlane(m, mRoleItem.GroundNormal);
+            //if (mRoleItem.RoleInput.move != Vector3.zero)
+            //{
+            //    Debug.Log(mRoleItem.RoleInput.move);
+            //}
         }
+        
+        private FWInputer MainInputer { get; set; }
     }
 
 }

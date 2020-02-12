@@ -15,6 +15,8 @@ namespace FWGame
         public void SetUserControll(bool flag)
         {
             role.IsUserControlling = flag;
+            role.PositionEnabled = !flag;
+            role.SpeedCurrent = role.Speed;
         }
     }
 }

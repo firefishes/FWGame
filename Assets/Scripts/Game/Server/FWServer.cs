@@ -1,11 +1,14 @@
-﻿using ShipDock.Notices;
+﻿using ShipDock.Applications;
+using ShipDock.Notices;
 using ShipDock.Pooling;
 using ShipDock.Server;
+using UnityEngine;
 
 namespace FWGame
 {
     public class FWServer : Server
     {
+        
         public FWServer()
         {
             ServerName = FWConsts.SERVER_FW;
@@ -55,9 +58,11 @@ namespace FWGame
         {
             IParamNotice<FWInputer> notice = target as IParamNotice<FWInputer>;
             MainInputer = notice.ParamValue;
+            Debug.Log("Main inputer is set.");
+            
         }
 
-        private FWInputer MainInputer { get; set; }
+        public FWInputer MainInputer { get; private set; }
     }
 
 }

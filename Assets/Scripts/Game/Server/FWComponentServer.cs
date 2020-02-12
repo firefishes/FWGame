@@ -1,4 +1,7 @@
-﻿using ShipDock.Applications;
+﻿using System;
+using ShipDock.Applications;
+using ShipDock.Notices;
+using ShipDock.Pooling;
 using ShipDock.Server;
 
 namespace FWGame
@@ -14,6 +17,13 @@ namespace FWGame
         {
             base.InitServer();
 
+            Register<IParamNotice<IFWRole>>(SetUserFWRoleResolver, Pooling<ParamNotice<IFWRole>>.Instance);
+
+            CreateComponents();
+        }
+
+        private void CreateComponents()
+        {
             ShipDockApp app = ShipDockApp.Instance;
             var components = app.Components;
             components.CreateComponent<RoleMustComponent>(FWConsts.COMPONENT_ROLE_MUST);
@@ -23,6 +33,23 @@ namespace FWGame
             components.CreateComponent<RoleNormalEnterSceneBehavior>(FWConsts.COMPONENT_ROLE_NORMAL_ENTER_SCENE);
             components.CreateComponent<RoleColliderComponent>(FWConsts.COMPONENT_ROLE_COLLIDER);
         }
+
+        public override void ServerReady()
+        {
+            base.ServerReady();
+
+            Add<IParamNotice<IFWRole>>(SetUserFWRole);
+        }
+
+        [Callable("SetUserFWRole", "SetUserFWRole")]
+        private void SetUserFWRole(ref IParamNotice<IFWRole> target)
+        {
+            IParamNotice<IFWRole> notice = target as IParamNotice<IFWRole>;
+        }
+
+        [Resolvable("SetUserFWRole")]
+        private void SetUserFWRoleResolver<I>(ref I target) { }
+
     }
 
 }
