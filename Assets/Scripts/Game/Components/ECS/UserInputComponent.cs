@@ -13,6 +13,7 @@ namespace FWGame
         public const int ROLE_INPUT_PHASE_SCALE_CAPSULE = 3;
         public const int ROLE_INPUT_PHASE_CHECK_CROUCH = 4;
 
+        private bool mIsRelaterInited;
         private IFWRole mRoleItem;
         private RoleData mRoleData;
         private RoleAnimatorInfo mAnimatorInfo;
@@ -27,7 +28,8 @@ namespace FWGame
             {
                 ServerNames = new string[]
                 {
-                    FWConsts.SERVER_FW
+                    FWConsts.SERVER_FW,
+                    FWConsts.SERVER_FW_LENS
                 }
             };
         }
@@ -72,9 +74,9 @@ namespace FWGame
 
         private void CheckUserInput()
         {
-            if(MainInputer == default)
+            if (MainInputer == default)
             {
-                mRelater.CommitRelate();
+                CheckRelaterInited();
                 FWServer server = mRelater.ServerRef<FWServer>(FWConsts.SERVER_FW);
                 MainInputer = server.MainInputer;
             }
@@ -83,11 +85,15 @@ namespace FWGame
             Vector3 m = new Vector3(x, y);
             mRoleItem.EnemyMainLockDown = default;
             mRoleInput.userInput = m;
-            //mRoleInput.move = Vector3.ProjectOnPlane(m, mRoleItem.GroundNormal);
-            //if (mRoleItem.RoleInput.move != Vector3.zero)
-            //{
-            //    Debug.Log(mRoleItem.RoleInput.move);
-            //}
+        }
+
+        private void CheckRelaterInited()
+        {
+            if (!mIsRelaterInited)
+            {
+                mIsRelaterInited = true;
+                mRelater.CommitRelate();
+            }
         }
         
         private FWInputer MainInputer { get; set; }

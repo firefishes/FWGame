@@ -8,7 +8,7 @@ namespace ShipDock.ECS
         void UpdateComponentUnit(Action<Action<int>> method);
         void FreeComponentUnit(Action<Action<int>> method);
         void UpdateAndFreeComponents(int time);
-        int CreateComponent<T>(int aid) where T : IShipDockComponent, new();
+        int Create<T>(int aid) where T : IShipDockComponent, new();
         void RemoveComponent(IShipDockComponent target);
     }
 }

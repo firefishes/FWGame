@@ -12,9 +12,11 @@ namespace FWGame
         RoleData RoleDataSource { get; }
         RoleAnimatorInfo RoleAnimatorInfo { get; }
         Vector3 GroundNormal { get; set; }
+        void SetSourceID(int id);
         int Camp { get; set; }
         bool IsGrounded { get; set; }
         bool IsGroundedAndCrouch { get; set; }
         bool IsUserControlling { get; set; }
+        int SourceID { get; }
     }
 }

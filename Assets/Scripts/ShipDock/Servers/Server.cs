@@ -1,4 +1,7 @@
-﻿using ShipDock.Pooling;
+﻿#define G_LOG
+
+using ShipDock.Pooling;
+using ShipDock.Testers;
 using System;
 using System.Reflection;
 
@@ -61,6 +64,7 @@ namespace ShipDock.Server
                 resolvable = ServersHolder.GetResolvable(ref alias, out int resultError);
                 if (resultError == 0)
                 {
+                    Tester.Instance.Log(TesterBaseApp.Instance, TesterBaseApp.LOG, resolvable == default, "error: Resolvable is null, alias is " + alias);
                     resolvable.SetResolver(resolverName, target, out statu, onlyOnce);
                 }
             }
@@ -132,6 +136,11 @@ namespace ShipDock.Server
                 }
             }
             return result;
+        }
+
+        public void Revert()
+        {
+
         }
 
         public void SetServerHolder(IServersHolder servers)

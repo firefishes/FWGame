@@ -1,5 +1,6 @@
 ﻿#define _TEST_MOVER
 
+using System;
 using ShipDock.Applications;
 using ShipDock.Notices;
 using ShipDock.Pooling;
@@ -39,6 +40,8 @@ namespace FWGame
         private CapsuleCollider m_RoleCollider;
         [SerializeField]
         private Animator m_RoleAnimator;
+        [SerializeField]
+        private Transform m_CameraNode;
 
         private float mGroundCheckDistance = 0.3f;
         private Ray mCrouchRay;
@@ -54,7 +57,7 @@ namespace FWGame
         private void Awake()
         {
             Init();
-            mBrigae = new ComponentBridge(OnAssetLoaded);
+            mBrigae = new ComponentBridge(OnInited);
             mBrigae.Start();
         }
 
@@ -62,11 +65,13 @@ namespace FWGame
         {
             mBrigae?.Dispose();
             mBrigae = default;
+            
+            GetInstanceID().Remove(OnRoleNotices);
         }
 
         private void Init()
         {
-            m_Camp = Random.Range(0, 2);
+            m_Camp = UnityEngine.Random.Range(0, 2);
             m_RoleMustSubgroup = new FWRoleMustSubgroup
             {
                 roleColliderID = m_RoleCollider.GetInstanceID(),
@@ -87,7 +92,7 @@ namespace FWGame
             mInitPosition = transform.localPosition;
         }
 
-        private void OnAssetLoaded()
+        private void OnInited()
         {
             mRole = new BananaRole
             {
@@ -98,6 +103,9 @@ namespace FWGame
             mRole.SpeedCurrent = mRole.Speed;
             mRoleData = mRole.RoleDataSource;
             mRole.Camp = m_Camp;
+            mRole.SetSourceID(GetInstanceID());
+
+            InitNotices();
 
             if(mRole.Camp == 0)
             {
@@ -106,6 +114,27 @@ namespace FWGame
                 FWConsts.COMPONENT_ROLE_CONTROLLABLE.Dispatch(notice);
                 Pooling<ParamNotice<FWRole>>.To(notice);
             }
+        }
+
+        private void InitNotices()
+        {
+            GetInstanceID().Add(OnRoleNotices);
+        }
+
+        private void OnRoleNotices(INoticeBase<int> obj)
+        {
+            IParamNotice<int> notice = obj as IParamNotice<int>;
+            switch(notice.ParamValue)
+            {
+                case FWConsts.NOTICE_PLAYER_ROLE_CHOOSEN:
+                    FWConsts.SERVER_FW_LENS.DeliveParam<FWCamerasServer, Role>("SetChoosenPlayer", "PlayerRoleChoosen", OnRoleChoosen);
+                    break;
+            }
+        }
+
+        private void OnRoleChoosen(ref IParamNotice<Role> target)
+        {
+            (target as IParamNotice<Role>).ParamValue = this;
         }
 
         private void UpdateByPositionComponent()
@@ -220,14 +249,14 @@ namespace FWGame
 
                 UpdateByPositionComponent();
 
-                if(mRole.IsUserControlling)
-                {
-                    transform.localScale = Vector3.one * 1.2f;
-                }
-                else
-                {
-                    transform.localScale = Vector3.one;
-                }
+                //if(mRole.IsUserControlling)
+                //{
+                //    transform.localScale = Vector3.one * 1.2f;
+                //}
+                //else
+                //{
+                //    transform.localScale = Vector3.one;
+                //}
 
                 if (mRoleInput != default)
                 {
@@ -252,14 +281,7 @@ namespace FWGame
             mRoleInput.deltaTime = Time.deltaTime;
 
             Vector3 v = transform.InverseTransformDirection(mRoleInput.move);
-            //if(!mRole.IsUserControlling)
-            //{
-                mRoleInput.SetMoveValue(v);
-            //}
-            if(mRole.IsUserControlling && v != Vector3.zero)
-            {
-                Debug.Log(v);
-            }
+            mRoleInput.SetMoveValue(v);
 
             CheckGroundStatus();
             mRoleInput.UpdateMovePhase();
@@ -356,6 +378,14 @@ namespace FWGame
             if (mRole != default && mRole.CollidingRoles.Contains(id))
             {
                 mRole.CollidingRoles.Remove(id);
+            }
+        }
+
+        public Transform CameraNode
+        {
+            get
+            {
+                return m_CameraNode;
             }
         }
     }

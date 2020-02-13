@@ -24,6 +24,11 @@ namespace FWGame
             PatherTargetPosition = value;
         }
 
+        public void SetSourceID(int id)
+        {
+            SourceID = id;
+        }
+
         protected override int[] ComponentIDs { get; } = new int[]
         {
             FWConsts.COMPONENT_ROLE_INPUT,
@@ -40,6 +45,7 @@ namespace FWGame
         public bool PositionEnabled { get; set; } = true;
         public bool FindngPath { get; set; }
         public int Camp { get; set; }
+        public int SourceID { get; private set; }
         public int[] States { get; private set; }
         public float Speed { get; set; }
         public float SpeedCurrent { get; set; }

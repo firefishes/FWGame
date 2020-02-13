@@ -8,6 +8,7 @@ namespace FWGame
         public const string SERVER_FW = "ServerFW";
         public const string SERVER_FW_COMPONENTS = "ServerFWComponents";
         public const string SERVER_FW_DATAS = "ServerFWDatas";
+        public const string SERVER_FW_LENS = "ServerFWLens";
 
         public const int COMPONENT_POSITION = 1;
         public const int COMPONENT_ROLE_NORMAL_ENTER_SCENE = 2;
@@ -19,10 +20,13 @@ namespace FWGame
 
         public const int NOTICE_GET_ROLE_WHEN_CREATE = 1000;
         public const int NOTICE_GET_GAME_INPUTER = 1001;
+        public const int NOTICE_PLAYER_ROLE_CHOOSEN = 1002;
 
         public const int DATA_GAME = 1;
+        public const int DATA_PLAYER = 2;
 
         public const int DC_CAMP_ROLE_CREATED = 2000;
+        public const int DC_PLAYER_ROLE_CHOOSEN = 2001;
 
         public const string ASSET_RES_DATA = "res_data/res_data";
         public const string ASSET_RES_BRIGEDS = "res_brigdes";
@@ -41,10 +45,13 @@ namespace FWGame
         public static readonly IResolvableConfig[] ServerConfigs = {
             new ResolvableConfigItem<INotice, Notice>("Notice"),
             new ResolvableConfigItem<INotice, GameNotice>("GameNotice"),
+            new ResolvableConfigItem<IParamNotice<int>, ParamNotice<int>>("IntParamer"),
+            new ResolvableConfigItem<IParamNotice<Role>, ParamNotice<Role>>("PlayerRoleChoosen"),
             new ResolvableConfigItem<IParamNotice<IFWRole>, CampRoleNotice>("CampRoleCreated"),
+            new ResolvableConfigItem<IParamNotice<IFWRole>, ParamNotice<IFWRole>>("SetUserFWRole"),
             new ResolvableConfigItem<IParamNotice<FWInputer>, ParamNotice<FWInputer>>("FWInputerParamer"),
             new ResolvableConfigItem<IParamNotice<FWInputer>, ParamNotice<FWInputer>>("SetFWInputerParamer"),
-            new ResolvableConfigItem<IParamNotice<IFWRole>, ParamNotice<IFWRole>>("SetUserFWRole")
+            new ResolvableConfigItem<IParamNotice<FWCamerLens>, ParamNotice<FWCamerLens>>("SetLensParamer"),
          };
     }
 }

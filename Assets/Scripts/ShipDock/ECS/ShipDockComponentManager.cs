@@ -25,7 +25,7 @@ namespace ShipDock.ECS
             mComponent = default;
         }
 
-        public int CreateComponent<T>(int aid) where T : IShipDockComponent, new()
+        public int Create<T>(int aid) where T : IShipDockComponent, new()
         {
             T target = new T();
             int id = mMapper.Add(target, out int statu);

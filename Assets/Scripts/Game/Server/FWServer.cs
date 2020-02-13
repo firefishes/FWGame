@@ -1,4 +1,5 @@
-﻿using ShipDock.Applications;
+﻿using System;
+using ShipDock.Applications;
 using ShipDock.Notices;
 using ShipDock.Pooling;
 using ShipDock.Server;
@@ -25,9 +26,13 @@ namespace FWGame
             
             Register<INotice>(NoticeResolver, Pooling<Notice>.Instance);
             Register<INotice>(GameNoticeResolver, Pooling<GameNotice>.Instance);
+            Register<IParamNotice<int>>(IntParamerResolver, Pooling<ParamNotice<int>>.Instance);
             Register<IParamNotice<FWInputer>>(SetFWInputerParamer, Pooling<ParamNotice<FWInputer>>.Instance);
             Register<IParamNotice<FWInputer>>(GetFWInputerParamer, Pooling<ParamNotice<FWInputer>>.Instance);
         }
+
+        [Resolvable("IntParamer")]
+        private void IntParamerResolver(ref IParamNotice<int> target) { }
 
         [Resolvable("Notice")]
         private void NoticeResolver(ref INotice target) { }

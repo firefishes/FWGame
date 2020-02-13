@@ -42,6 +42,7 @@ namespace FWGame
             servers.Add(new FWServer());
             servers.Add(new FWDataServer());
             servers.Add(new FWComponentServer());
+            servers.Add(new FWCamerasServer());
             servers.AddOnServerFinished(OnFinished);
         }
 

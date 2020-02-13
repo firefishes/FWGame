@@ -51,12 +51,13 @@ namespace FWGame
             SelectedRoleModel = target;
             SelectedRoleModel.SetUserControll(true);
 
-            //FWConsts.SERVER_FW.DeliveParam<FWComponentServer, IFWRole>("SetUserFWRole", "SetUserFWRole", OnSetUserFWRole);
+            FWConsts.SERVER_FW_DATAS.DeliveParam<FWDataServer, IFWRole>("SetUserFWRole", "SetUserFWRole", OnSetUserFWRole);
         }
 
         [Resolvable("SetUserFWRole")]
         private void OnSetUserFWRole(ref IParamNotice<IFWRole> target)
         {
+            (target as IParamNotice<IFWRole>).ParamValue = SelectedRoleModel.role;
         }
 
         public KeyValueList<int, UIRoleCard> RoleCardMapper { get; private set; } = new KeyValueList<int, UIRoleCard>();
