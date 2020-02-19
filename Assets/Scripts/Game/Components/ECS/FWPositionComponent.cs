@@ -6,6 +6,7 @@ namespace FWGame
 {
     public class FWPositionComponent : ShipDockComponent
     {
+        private float mDistance;
         private IFWRole mRole;
 
         public override void Execute(int time, ref IShipDockEntitas target)
@@ -16,15 +17,15 @@ namespace FWGame
 
             if (mRole.PositionEnabled)
             {
-                if(mRole.EnemyMainLockDown != default)
+                if (mRole.EnemyMainLockDown != default)
                 {
-                    float direction = Vector3.Distance(mRole.Position, mRole.EnemyMainLockDown.Position);
-                    if (direction <= GetStopDistance())
+                    mDistance = mRole.GetDistFromMainLockDown();
+                    if (ShouldStop())
                     {
                         mRole.FindngPath = false;
                         mRole.SpeedCurrent = 0;
                     }
-                    else if (direction > GetTraceDistance())
+                    else if (ShouldMove())
                     {
                         mRole.FindngPath = true;
                         mRole.SpeedCurrent = mRole.Speed;
@@ -49,7 +50,17 @@ namespace FWGame
 
         private float GetTraceDistance()
         {
-            return 5f;
+            return 3f;
+        }
+
+        private bool ShouldMove()
+        {
+            return mDistance > GetTraceDistance();
+        }
+
+        private bool ShouldStop()
+        {
+            return mDistance <= GetStopDistance();
         }
 
         public override void Dispose()

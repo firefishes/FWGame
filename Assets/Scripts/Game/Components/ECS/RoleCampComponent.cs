@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ShipDock.Applications;
+﻿using System.Collections.Generic;
 using ShipDock.ECS;
 using ShipDock.Notices;
 using ShipDock.Tools;
@@ -46,8 +44,6 @@ namespace FWGame
                 {
                     mAllRoles.Add(id);
                 }
-                //IParamNotice<IFWRole> notice = mDataServer.Resolve<IParamNotice<IFWRole>>("CampRoleCreated");
-                //notice.ParamValue = role;
                 mDataServer.Delive<IParamNotice<IFWRole>>("AddCampRole", "CampRoleCreated");
                 RoleCreated = default;
             }
@@ -98,11 +94,6 @@ namespace FWGame
                     }
                 }
             }
-            //mRoleTarget = mRoleEntitas.EnemyMainLockDown;
-            //if (mRoleTarget != default)
-            //{
-            //    mRoleEntitas.SetPahterTarget(mRoleTarget.Position);
-            //}
         }
 
         public IFWRole RoleCreated { get; private set; }

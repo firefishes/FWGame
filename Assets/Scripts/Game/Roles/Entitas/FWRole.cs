@@ -29,6 +29,11 @@ namespace FWGame
             SourceID = id;
         }
 
+        public float GetDistFromMainLockDown()
+        {
+            return EnemyMainLockDown != default ? Vector3.Distance(Position, EnemyMainLockDown.Position) : float.MaxValue;
+        }
+
         protected override int[] ComponentIDs { get; } = new int[]
         {
             FWConsts.COMPONENT_ROLE_INPUT,
@@ -49,6 +54,7 @@ namespace FWGame
         public int[] States { get; private set; }
         public float Speed { get; set; }
         public float SpeedCurrent { get; set; }
+        public string Name { get; set; }
         public Vector3 Direction { get; set; }
         public Vector3 Position { get; set; }
         public Vector3 PostionTarget { get; set; }

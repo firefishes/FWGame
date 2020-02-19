@@ -8,6 +8,7 @@ namespace FWGame
 {
     public class FWDataServer : Server
     {
+        private int mRoleIndex;
         private ServerRelater mRelater;
 
         public FWDataServer()
@@ -68,6 +69,8 @@ namespace FWGame
             Debug.Log(target.ParamValue);
             var data = mRelater.DataRef<FWGameData>(FWConsts.DATA_GAME);
             data.AddCampRole(target.ParamValue);
+            target.ParamValue.Name = "Role_" + mRoleIndex;
+            mRoleIndex++;
         }
 
         [Callable("SetUserFWRole", "SetUserFWRole")]

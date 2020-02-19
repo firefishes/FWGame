@@ -172,7 +172,7 @@ namespace ShipDock.Applications
         private void WalkUpdateItems(int time, int methodType)
         {
             mIndex = 0;
-            mSize = mTicksList.Count;
+            mSize = (mTicksList != default) ? mTicksList.Count : 0;
             for (mIndex = 0; mIndex < mSize; mIndex++)
             {
                 if(mTicksList == null)
@@ -206,7 +206,7 @@ namespace ShipDock.Applications
                     if(mItem.IsUpdate)
                     {
                         mTicksLater?.Update(time);
-                        mItem.OnUpdate(time);
+                        mItem?.OnUpdate(time);
                     }
                     break;
                 case TICKS_LATE_UPDATE:

@@ -7,7 +7,7 @@ namespace FWGame
         public BananaRole()
         {
             RoleData data = RoleData.GetRoleDataByRandom();
-            data.ConfigID = new Random().Next(0, 3);
+            data.ConfigID = 0;//new Random().Next(0, 3);
             SetRoleData(data);
         }
     }

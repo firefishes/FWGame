@@ -14,7 +14,7 @@ namespace FWGame
         private UIRoleCard m_UIRoleCardRaw;
         [SerializeField]
         private Transform m_UIRoleCardList;
-
+        
         public void UpdateRolesUI(ref List<CampRoleModel> roles)
         {
             UIRoleCard roleCard;
@@ -26,6 +26,10 @@ namespace FWGame
                 if(item.role.Camp == 0)
                 {
                     int id = item.controllIndex;
+                    if(SelectedRoleModel == default)
+                    {
+                        OnRoleCardSelectedHandler(item);
+                    }
                     if (RoleCardMapper.ContainsKey(id))
                     {
                         RoleCardMapper[id].RoleCardData = item;
@@ -39,7 +43,6 @@ namespace FWGame
                     }
                 }
             }
-            
         }
 
         private void OnRoleCardSelectedHandler(CampRoleModel target)

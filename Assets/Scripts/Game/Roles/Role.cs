@@ -43,6 +43,7 @@ namespace FWGame
         [SerializeField]
         private Transform m_CameraNode;
 
+        private bool mIsRoleNameSynced;
         private float mGroundCheckDistance = 0.3f;
         private Ray mCrouchRay;
         private RaycastHit mGroundHitInfo;
@@ -87,6 +88,29 @@ namespace FWGame
             m_RoleMustSubgroup.Init(ref m_RoleCollider);
         }
 
+        [SerializeField]
+        private bool m_IsShowEnemyPos;
+
+        private GUIStyle mEnemyLabelStyle;
+
+        private void OnGUI()
+        {
+            if(m_IsShowEnemyPos)
+            {
+                if(mEnemyLabelStyle == default)
+                {
+                    mEnemyLabelStyle = new GUIStyle("enemyPosLabel")
+                    {
+                        fontSize = 30
+                    };
+
+                }
+                string content = (mRole != default) ? mRole.GetDistFromMainLockDown().ToString() : string.Empty;
+
+                GUILayout.Label(content, mEnemyLabelStyle);
+            }
+        }
+
         void Start()
         {
             mInitPosition = transform.localPosition;
@@ -98,6 +122,7 @@ namespace FWGame
             {
                 Position = mInitPosition
             };
+            mRole.Name = name;
             mRole.RoleMustSubgroup = m_RoleMustSubgroup;
             mRole.InitComponents();
             mRole.SpeedCurrent = mRole.Speed;
@@ -139,10 +164,10 @@ namespace FWGame
 
         private void UpdateByPositionComponent()
         {
+            mRole.Direction = transform.forward;
+            mRole.Position = transform.position;
             if (mRole.PositionEnabled)
             {
-                mRole.Direction = transform.forward;
-                mRole.Position = transform.position;
                 if (mRole.FindngPath)
                 {
                     if (mRole.EnemyMainLockDown != default)
@@ -161,6 +186,7 @@ namespace FWGame
             }
             else
             {
+                m_NavMeshAgent.isStopped = true;
                 Vector3 d = new Vector3(mRoleInput.userInput.x, 0, mRoleInput.userInput.y);
                 mRoleInput.SetMoveValue(d);
                 m_RoleRigidbody.velocity = d * mRole.SpeedCurrent * 10;
@@ -246,6 +272,12 @@ namespace FWGame
                 m_Speed = mRole.SpeedCurrent;
                 m_NavMeshAgent.speed = mRole.SpeedCurrent;
                 mRoleInput = mRole.RoleInput;
+
+                if(!mIsRoleNameSynced && !string.IsNullOrEmpty(mRole.Name))
+                {
+                    mIsRoleNameSynced = true;
+                    name = mRole.Name;
+                }
 
                 UpdateByPositionComponent();
 

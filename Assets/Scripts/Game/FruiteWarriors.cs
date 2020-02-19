@@ -80,7 +80,7 @@ namespace FWGame
             AssetBundles ABs = ShipDockApp.Instance.ABs;
             GameObject prefab = ABs.Get(FWConsts.ASSET_RES_BRIGEDS, "BananaRoleRes");
             GameObject role;
-            int max = 5;
+            int max = 10;
             for (int i = 0; i < max; i++)
             {
                 role = Instantiate(prefab);
@@ -88,7 +88,6 @@ namespace FWGame
 
             UIManager uis = ShipDockApp.Instance.UIs;
             uis.Open<RoleChooser>(FWConsts.UI_NAME_ROLE_CHOOSER);
-            //uis.Open<DualToucher>(FWConsts.UI_NAME_DUAL_TOUCH_CONTROLS);
         }
 
         private void OnServersInit()
