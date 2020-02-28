@@ -88,6 +88,9 @@ namespace FWGame
             m_RoleMustSubgroup.Init(ref m_RoleCollider);
         }
 
+#if UNITY_EDITOR
+        private static Role sceneSelectedRole;
+
         [SerializeField]
         private bool m_IsShowEnemyPos;
 
@@ -97,7 +100,13 @@ namespace FWGame
         {
             if(m_IsShowEnemyPos)
             {
-                if(mEnemyLabelStyle == default)
+                if (sceneSelectedRole != default)
+                {
+                    sceneSelectedRole.CancelShowEnemyPos();
+                }
+                sceneSelectedRole = this;
+
+                if (mEnemyLabelStyle == default)
                 {
                     mEnemyLabelStyle = new GUIStyle("enemyPosLabel")
                     {
@@ -110,6 +119,12 @@ namespace FWGame
                 GUILayout.Label(content, mEnemyLabelStyle);
             }
         }
+
+        public void CancelShowEnemyPos()
+        {
+            m_IsShowEnemyPos = false;
+        }
+#endif
 
         void Start()
         {
@@ -280,15 +295,6 @@ namespace FWGame
                 }
 
                 UpdateByPositionComponent();
-
-                //if(mRole.IsUserControlling)
-                //{
-                //    transform.localScale = Vector3.one * 1.2f;
-                //}
-                //else
-                //{
-                //    transform.localScale = Vector3.one;
-                //}
 
                 if (mRoleInput != default)
                 {
