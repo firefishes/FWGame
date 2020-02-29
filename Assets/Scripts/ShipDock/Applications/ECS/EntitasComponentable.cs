@@ -1,9 +1,8 @@
-﻿using ShipDock.Applications;
-using ShipDock.ECS;
+﻿using ShipDock.ECS;
 
-namespace FWGame
+namespace ShipDock.Applications
 {
-    public class FWEntitas : ShipDockEntitas
+    public abstract class EntitasComponentable : ShipDockEntitas
     {
         public override void InitComponents()
         {
@@ -21,6 +20,6 @@ namespace FWGame
             }
         }
 
-        protected virtual int[] ComponentIDs { get; }
+        protected abstract int[] ComponentIDs { get; }
     }
 }

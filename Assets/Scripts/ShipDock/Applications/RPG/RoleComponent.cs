@@ -1,15 +1,12 @@
 ﻿#define _TEST_MOVER
 
-using System;
-using ShipDock.Applications;
 using ShipDock.Notices;
-using ShipDock.Pooling;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace FWGame
+namespace ShipDock.Applications
 {
-    public class Role : MonoBehaviour
+    public abstract class RoleComponent : MonoBehaviour
     {
 
         private const float k_Half = 0.5f;
@@ -25,15 +22,13 @@ namespace FWGame
         [SerializeField]
         private float m_Speed;
         [SerializeField]
-        private int m_Camp;
-        [SerializeField]
         private float m_RunCycleLegOffset = 0.2f;
         [SerializeField]
         private float m_AnimSpeedMultiplier = 1f;
         [SerializeField]
         private float m_MoveSpeedMultiplier = 1f;
         [SerializeField]
-        private FWRoleMustSubgroup m_RoleMustSubgroup;
+        private CommonRoleMustSubgroup m_RoleMustSubgroup;
         [SerializeField]
         private Rigidbody m_RoleRigidbody;
         [SerializeField]
@@ -43,19 +38,20 @@ namespace FWGame
         [SerializeField]
         private Transform m_CameraNode;
 
+        protected IRoleData mRoleData;
+        protected RoleEntitas mRole;
+
         private bool mIsRoleNameSynced;
         private float mGroundCheckDistance = 0.3f;
         private Ray mCrouchRay;
         private RaycastHit mGroundHitInfo;
-        private RoleAnimatorInfo mAnimatorInfo;
-        private FWRole mRole;
-        private FWRoleInput mRoleInput;
-        private RoleData mRoleData = new RoleData();
+        private CommonRoleAnimatorInfo mAnimatorInfo;
+        private IRoleInput mRoleInput;
         private Vector3 mInitPosition;
         private ComponentBridge mBrigae;
         private AnimatorStateInfo mAnimatorStateInfo;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             Init();
             mBrigae = new ComponentBridge(OnInited);
@@ -70,10 +66,13 @@ namespace FWGame
             GetInstanceID().Remove(OnRoleNotices);
         }
 
+        protected abstract void InitRoleData();
+
         private void Init()
         {
-            m_Camp = UnityEngine.Random.Range(0, 2);
-            m_RoleMustSubgroup = new FWRoleMustSubgroup
+            InitRoleData();
+            
+            m_RoleMustSubgroup = new CommonRoleMustSubgroup
             {
                 roleColliderID = m_RoleCollider.GetInstanceID(),
                 animatorID = m_RoleAnimator.GetInstanceID(),
@@ -89,7 +88,7 @@ namespace FWGame
         }
 
 #if UNITY_EDITOR
-        private static Role sceneSelectedRole;
+        private static RoleComponent sceneSelectedRole;
 
         [SerializeField]
         private bool m_IsShowEnemyPos;
@@ -126,58 +125,37 @@ namespace FWGame
         }
 #endif
 
-        void Start()
+        protected void Start()
         {
             mInitPosition = transform.localPosition;
         }
 
-        private void OnInited()
+        protected virtual void OnInited()
         {
-            mRole = new BananaRole
-            {
-                Position = mInitPosition
-            };
-            mRole.Name = name;
-            mRole.RoleMustSubgroup = m_RoleMustSubgroup;
-            mRole.InitComponents();
-            mRole.SpeedCurrent = mRole.Speed;
-            mRoleData = mRole.RoleDataSource;
-            mRole.Camp = m_Camp;
-            mRole.SetSourceID(GetInstanceID());
+            SetRoleEntitas();
 
-            InitNotices();
-
-            if(mRole.Camp == 0)
+            if(mRole != default)
             {
-                ParamNotice<FWRole> notice = Pooling<ParamNotice<FWRole>>.From();
-                notice.ParamValue = mRole;
-                FWConsts.COMPONENT_ROLE_CONTROLLABLE.Dispatch(notice);
-                Pooling<ParamNotice<FWRole>>.To(notice);
+                mRole.Name = name;
+                mRole.RoleMustSubgroup = m_RoleMustSubgroup;
+                mRole.InitComponents();
+                mRole.SpeedCurrent = mRole.Speed;
+                mRoleData = mRole.RoleDataSource;
+                mRole.SetSourceID(GetInstanceID());
+
+                InitNotices();
             }
         }
-
+        
         private void InitNotices()
         {
             GetInstanceID().Add(OnRoleNotices);
         }
 
-        private void OnRoleNotices(INoticeBase<int> obj)
-        {
-            IParamNotice<int> notice = obj as IParamNotice<int>;
-            switch(notice.ParamValue)
-            {
-                case FWConsts.NOTICE_PLAYER_ROLE_CHOOSEN:
-                    FWConsts.SERVER_FW_LENS.DeliveParam<FWCamerasServer, Role>("SetChoosenPlayer", "PlayerRoleChoosen", OnRoleChoosen);
-                    break;
-            }
-        }
+        protected abstract void SetRoleEntitas();
+        protected abstract void OnRoleNotices(INoticeBase<int> obj);
 
-        private void OnRoleChoosen(ref IParamNotice<Role> target)
-        {
-            (target as IParamNotice<Role>).ParamValue = this;
-        }
-
-        private void UpdateByPositionComponent()
+        protected void UpdateByPositionComponent()
         {
             mRole.Direction = transform.forward;
             mRole.Position = transform.position;
@@ -188,27 +166,27 @@ namespace FWGame
                     if (mRole.EnemyMainLockDown != default)
                     {
                         m_NavMeshAgent.destination = mRole.EnemyMainLockDown.Position;
-                        mRoleInput.move = m_NavMeshAgent.velocity;
+                        mRoleInput.SetMoveValue(m_NavMeshAgent.velocity);
                     }
                 }
                 else
                 {
                     if (mRoleInput != default)
                     {
-                        mRoleInput.move = Vector3.zero;
+                        mRoleInput.SetMoveValue(Vector3.zero);
                     }
                 }
             }
             else
             {
                 m_NavMeshAgent.isStopped = true;
-                Vector3 d = new Vector3(mRoleInput.userInput.x, 0, mRoleInput.userInput.y);
+                Vector3 d = new Vector3(mRoleInput.GetUserInputValue().x, 0, mRoleInput.GetUserInputValue().y);
                 mRoleInput.SetMoveValue(d);
                 m_RoleRigidbody.velocity = d * mRole.SpeedCurrent * 10;
             }
         }
 
-        private void CheckRoleGrounding()
+        protected void CheckRoleGrounding()
         {
             transform.Rotate(0, mRoleInput.ExtraTurnRotationOut, 0);
 
@@ -238,13 +216,13 @@ namespace FWGame
             mRoleInput.UpdateMovePhase();
         }
 
-        private void CheckRoleCrouching()
+        protected void CheckRoleCrouching()
         {
             if (mRole.IsGroundedAndCrouch)
             {
-                if (!mRoleInput.crouching)
+                if (!mRoleInput.IsCrouching())
                 {
-                    mRoleInput.crouching = true;
+                    mRoleInput.SetCrouching(true);
                     m_RoleCollider.height = m_RoleMustSubgroup.capsuleHeight / 2f;
                     m_RoleCollider.center = m_RoleMustSubgroup.capsuleCenter / 2f;
                 }
@@ -253,13 +231,13 @@ namespace FWGame
             {
                 if(!UpdateCrouchingByRay())
                 {
-                    mRoleInput.crouching = false;
+                    mRoleInput.SetCrouching (false);
                     m_RoleCollider.height = m_RoleMustSubgroup.capsuleHeight;
                     m_RoleCollider.center = m_RoleMustSubgroup.capsuleCenter;
                 }
             }
             // prevent standing up in crouch-only zones
-            if (!mRoleInput.crouching)
+            if (!mRoleInput.IsCrouching())
             {
                 UpdateCrouchingByRay();
             }
@@ -274,7 +252,7 @@ namespace FWGame
             bool flag = Physics.SphereCast(mCrouchRay, m_RoleCollider.radius * k_Half, crouchRayLength, Physics.AllLayers, QueryTriggerInteraction.Ignore);
             if (flag)
             {
-                mRoleInput.crouching = true;
+                mRoleInput.SetCrouching(true);
             }
             return flag;
         }
@@ -300,13 +278,13 @@ namespace FWGame
                 {
                     switch (mRoleInput.RoleMovePhase)
                     {
-                        case UserInputComponent.ROLE_INPUT_PHASE_MOVE_READY:
+                        case UserInputPhases.ROLE_INPUT_PHASE_MOVE_READY:
                             CheckMoveAndGroundStatus();
                             break;
-                        case UserInputComponent.ROLE_INPUT_PHASE_CHECK_GROUNDE:
+                        case UserInputPhases.ROLE_INPUT_PHASE_CHECK_GROUNDE:
                             CheckRoleGrounding();
                             break;
-                        case UserInputComponent.ROLE_INPUT_PHASE_CHECK_CROUCH:
+                        case UserInputPhases.ROLE_INPUT_PHASE_CHECK_CROUCH:
                             CheckRoleCrouching();
                             break;
                     }
@@ -316,9 +294,9 @@ namespace FWGame
 
         private void CheckMoveAndGroundStatus()
         {
-            mRoleInput.deltaTime = Time.deltaTime;
+            mRoleInput.SetDeltaTime(Time.deltaTime);
 
-            Vector3 v = transform.InverseTransformDirection(mRoleInput.move);
+            Vector3 v = transform.InverseTransformDirection(mRoleInput.GetMoveValue());
             mRoleInput.SetMoveValue(v);
 
             CheckGroundStatus();
@@ -354,7 +332,7 @@ namespace FWGame
             // update the animator parameters
             m_RoleAnimator.SetFloat("Forward", mRoleInput.ForwardAmount, 0.1f, Time.deltaTime);
             m_RoleAnimator.SetFloat("Turn", mRoleInput.TurnAmount, 0.1f, Time.deltaTime);
-            m_RoleAnimator.SetBool("Crouch", mRoleInput.crouching);
+            m_RoleAnimator.SetBool("Crouch", mRoleInput.IsCrouching());
             m_RoleAnimator.SetBool("OnGround", mRole.IsGrounded);
             if (!mRole.IsGrounded)
             {
@@ -374,7 +352,7 @@ namespace FWGame
 
             // the anim speed multiplier allows the overall speed of walking/running to be tweaked in the inspector,
             // which affects the movement speed because of the root motion.
-            if (mRole.IsGrounded && mRoleInput.move.magnitude > 0)
+            if (mRole.IsGrounded && mRoleInput.GetMoveValue().magnitude > 0)
             {
                 m_AnimSpeedMultiplier = mRole.RoleAnimatorInfo.AnimSpeedMultiplier;
                 m_RoleAnimator.speed = m_AnimSpeedMultiplier;

@@ -25,8 +25,8 @@ namespace FWGame
             var components = app.Components;
             components.Create<RoleMustComponent>(FWConsts.COMPONENT_ROLE_MUST);
             components.Create<RoleCampComponent>(FWConsts.COMPONENT_ROLE_CAMP);
-            components.Create<UserInputComponent>(FWConsts.COMPONENT_ROLE_INPUT);
-            components.Create<FWPositionComponent>(FWConsts.COMPONENT_POSITION);
+            components.Create<FWUserInputComponent>(FWConsts.COMPONENT_ROLE_INPUT);
+            components.Create<PositionComponent>(FWConsts.COMPONENT_POSITION);
             components.Create<RoleNormalEnterSceneBehavior>(FWConsts.COMPONENT_ROLE_NORMAL_ENTER_SCENE);
             components.Create<RoleColliderComponent>(FWConsts.COMPONENT_ROLE_COLLIDER);
         }

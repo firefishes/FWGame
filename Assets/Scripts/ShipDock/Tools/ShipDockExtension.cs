@@ -50,4 +50,44 @@ static public class ShipDockExtension
         }
         return result;
     }
+
+    public static List<T> Contact<T>(this List<T> target, List<T> list)
+    {
+        int max = (list != default) ? list.Count : 0;
+        for (int i = 0; i < max; i++)
+        {
+            target.Add(list[i]);
+        }
+        return target;
+    }
+    
+    public static List<T> Contact<T>(this List<T> target, T[] list)
+    {
+        int max = (list != default) ? list.Length : 0;
+        for (int i = 0; i < max; i++)
+        {
+            target.Add(list[i]);
+        }
+        return target;
+    }
+
+    public static T[] ContactToArr<T>(this List<T> target, List<T> list)
+    {
+        int max = (list != default) ? list.Count : 0;
+        for (int i = 0; i < max; i++)
+        {
+            target.Add(list[i]);
+        }
+        return target.ToArray();
+    }
+
+    public static T[] ContactToArr<T>(this List<T> target, T[] list)
+    {
+        int max = (list != default) ? list.Length : 0;
+        for (int i = 0; i < max; i++)
+        {
+            target.Add(list[i]);
+        }
+        return target.ToArray();
+    }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-namespace FWGame
+namespace ShipDock.Applications
 {
     [Serializable]
-    public class FWRoleInput
+    public class RoleInputInfo : IRoleInput
     {
         public float deltaTime;
         public Vector3 move;
@@ -14,52 +14,92 @@ namespace FWGame
         public bool crouching;
         public float turnSpeed;
 
-        public void UpdateAmout(ref IFWRole roleEntitas)
+        public void UpdateAmout(ref ICommonRole roleEntitas)
         {
             move = Vector3.ProjectOnPlane(move, roleEntitas.GroundNormal);
             TurnAmount = Mathf.Atan2(move.x, move.z);
             ForwardAmount = move.z;
         }
 
-        public float UpdateRoleExtraTurnRotation(ref RoleData roleData)
+        public float UpdateRoleExtraTurnRotation(ref IRoleData roleData)
         {
             turnSpeed = Mathf.Lerp(roleData.StationaryTurnSpeed, roleData.MovingTurnSpeed, ForwardAmount);
             ExtraTurnRotationOut = TurnAmount * turnSpeed * deltaTime;
             return ExtraTurnRotationOut;
         }
 
-        public void HandleAirborneMovement(ref RoleData roleData)
+        public void HandleAirborneMovement(ref IRoleData roleData)
         {
             ExtraGravityForceOut = (Physics.gravity * roleData.GravityMultiplier) - Physics.gravity;
         }
 
-        public bool HandleGroundedMovement(ref FWRoleInput input, ref RoleAnimatorInfo animatorInfo)
+        public bool HandleGroundedMovement(ref IRoleInput input, ref CommonRoleAnimatorInfo animatorInfo)
         {
             // check whether conditions are right to allow a jump:
             bool isNameGrounded = animatorInfo.IsNameGrounded;
-            bool result = input.jump && !input.crouch && isNameGrounded;
+            bool result = input.IsJump() && !input.IsCrouch() && isNameGrounded;
             return result;
         }
 
-        public void ScaleCapsuleForCrouching(ref IFWRole roleEntitas, ref FWRoleInput roleInput)
+        public void ScaleCapsuleForCrouching(ref ICommonRole roleEntitas, ref IRoleInput roleInput)
         {
-            roleEntitas.IsGroundedAndCrouch = roleEntitas.IsGrounded && roleInput.crouch;
+            roleEntitas.IsGroundedAndCrouch = roleEntitas.IsGrounded && roleInput.IsCrouch();
             if (roleEntitas.IsGroundedAndCrouch)
             {
-                if (roleInput.crouching)
+                if (roleInput.IsCrouching())
                 {
                     return;
                 }
-                FWRoleMustSubgroup subgroup = roleEntitas.RoleMustSubgroup;
+                CommonRoleMustSubgroup subgroup = roleEntitas.RoleMustSubgroup;
                 subgroup.capsuleHeight /= 2f;
                 subgroup.capsuleCenter /= 2f;
                 roleEntitas.RoleMustSubgroup = subgroup;
             }
         }
 
+        public Vector3 GetUserInputValue()
+        {
+            return userInput;
+        }
+
+        public void SetUserInputValue(Vector3 value)
+        {
+            userInput = value;
+        }
+
+        public bool IsCrouch()
+        {
+            return crouch;
+        }
+
+        public bool IsCrouching()
+        {
+            return crouching;
+        }
+
+        public void SetCrouching(bool flag)
+        {
+            crouching = flag;
+        }
+
         public void SetMoveValue(Vector3 value)
         {
             move = value;
+        }
+
+        public Vector3 GetMoveValue()
+        {
+            return move;
+        }
+
+        public void MoveValueNormalize()
+        {
+            move.Normalize();
+        }
+
+        public bool IsJump()
+        {
+            return jump;
         }
 
         public void UpdateMovePhase()
@@ -74,6 +114,11 @@ namespace FWGame
         public void ResetMovePhase()
         {
             RoleMovePhase = 0;
+        }
+
+        public void SetDeltaTime(float time)
+        {
+            deltaTime = time;
         }
 
         public int RoleMovePhase { get; private set; }

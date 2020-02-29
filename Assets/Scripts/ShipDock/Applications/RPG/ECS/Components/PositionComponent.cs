@@ -1,19 +1,17 @@
-﻿using System;
-using ShipDock.ECS;
-using UnityEngine;
+﻿using ShipDock.ECS;
 
-namespace FWGame
+namespace ShipDock.Applications
 {
-    public class FWPositionComponent : ShipDockComponent
+    public class PositionComponent : ShipDockComponent
     {
         private float mDistance;
-        private IFWRole mRole;
+        private ICommonRole mRole;
 
         public override void Execute(int time, ref IShipDockEntitas target)
         {
             base.Execute(time, ref target);
 
-            mRole = target as IFWRole;
+            mRole = target as ICommonRole;
 
             if (mRole.PositionEnabled)
             {

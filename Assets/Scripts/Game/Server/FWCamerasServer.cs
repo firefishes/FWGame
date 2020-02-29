@@ -33,12 +33,12 @@ namespace FWGame
             base.InitServer();
 
             Register<IParamNotice<FWCamerLens>>(SetLensParamer, Pooling<ParamNotice<FWCamerLens>>.Instance);
-            Register<IParamNotice<Role>>(PlayerRoleChoosenParamer, Pooling<ParamNotice<Role>>.Instance);
+            Register<IParamNotice<FWRoleComponent>>(PlayerRoleChoosenParamer, Pooling<ParamNotice<FWRoleComponent>>.Instance);
 
         }
 
         [Resolvable("PlayerRoleChoosen")]
-        private void PlayerRoleChoosenParamer(ref IParamNotice<Role> target) { }
+        private void PlayerRoleChoosenParamer(ref IParamNotice<FWRoleComponent> target) { }
 
         [Resolvable("SetLensParamer")]
         private void SetLensParamer(ref IParamNotice<FWCamerLens> target) { }
@@ -52,13 +52,13 @@ namespace FWGame
             playerData.Register(this);
 
             Add<IParamNotice<FWCamerLens>>(SetLens);
-            Add<IParamNotice<Role>>(SetChoosenPlayer);
+            Add<IParamNotice<FWRoleComponent>>(SetChoosenPlayer);
         }
 
         [Callable("SetChoosenPlayer", "PlayerRoleChoosen")]
         private void SetChoosenPlayer<I>(ref I target)
         {
-            Role role = (target as IParamNotice<Role>).ParamValue;
+            FWRoleComponent role = (target as IParamNotice<FWRoleComponent>).ParamValue;
             Transform tf = mLens.CameraFollower.transform;
             tf.SetParent(role.CameraNode);
             tf.localPosition = Vector3.zero;

@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-namespace FWGame
+namespace ShipDock.Applications
 {
     [Serializable]
-    public struct FWRoleMustSubgroup
+    public struct CommonRoleMustSubgroup
     {
         public int roleColliderID;
         public int rigidbodyID;

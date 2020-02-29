@@ -1,13 +1,14 @@
-﻿using System;
+﻿using ShipDock.Applications;
+using System;
 
 namespace FWGame
 {
     [Serializable]
-    public struct RoleData
+    public struct FWRoleData : IRoleData
     {
-        public static RoleData GetRoleDataByRandom()
+        public static FWRoleData GetRoleDataByRandom()
         {
-            RoleData result = new RoleData
+            FWRoleData result = new FWRoleData
             {
                 Hp = new Random().Next(50, 100),
                 FreshKeeping = new Random().Next(10, 50),
@@ -44,4 +45,3 @@ namespace FWGame
         public int ConfigID { get; set; }
     }
 }
-

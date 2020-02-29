@@ -1,4 +1,5 @@
-﻿using ShipDock.Notices;
+﻿using ShipDock.Applications;
+using ShipDock.Notices;
 using ShipDock.Server;
 
 namespace FWGame
@@ -42,16 +43,15 @@ namespace FWGame
 
         public const int POOL_UI_ROLE_CARD = 0;
 
-        public static readonly IResolvableConfig[] ServerConfigs = {
-            new ResolvableConfigItem<INotice, Notice>("Notice"),
+        private static readonly IResolvableConfig[] FWServerConfigs =
+        {
             new ResolvableConfigItem<INotice, GameNotice>("GameNotice"),
-            new ResolvableConfigItem<IParamNotice<int>, ParamNotice<int>>("IntParamer"),
-            new ResolvableConfigItem<IParamNotice<Role>, ParamNotice<Role>>("PlayerRoleChoosen"),
+            new ResolvableConfigItem<IParamNotice<FWRoleComponent>, ParamNotice<FWRoleComponent>>("PlayerRoleChoosen"),
             new ResolvableConfigItem<IParamNotice<IFWRole>, CampRoleNotice>("CampRoleCreated"),
             new ResolvableConfigItem<IParamNotice<IFWRole>, ParamNotice<IFWRole>>("SetUserFWRole"),
-            new ResolvableConfigItem<IParamNotice<FWInputer>, ParamNotice<FWInputer>>("FWInputerParamer"),
-            new ResolvableConfigItem<IParamNotice<FWInputer>, ParamNotice<FWInputer>>("SetFWInputerParamer"),
             new ResolvableConfigItem<IParamNotice<FWCamerLens>, ParamNotice<FWCamerLens>>("SetLensParamer"),
-         };
+        };
+
+        public static readonly IResolvableConfig[] ServerConfigs = MainServer.ServerConfigs.ContactToArr(FWServerConfigs);
     }
 }

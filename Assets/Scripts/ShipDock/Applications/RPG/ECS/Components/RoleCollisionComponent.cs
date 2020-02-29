@@ -2,20 +2,20 @@
 using ShipDock.ECS;
 using ShipDock.Tools;
 
-namespace FWGame
+namespace ShipDock.Applications
 {
     public class RoleColliderComponent : ShipDockComponent
     {
-        private IFWRole mRole;
-        private IFWRole mRoleCollidingTarget;
+        private ICommonRole mRole;
+        private ICommonRole mRoleCollidingTarget;
         private List<int> mRoleColliding;
-        private KeyValueList<int, IFWRole> mRoleColliderMapper;
+        private KeyValueList<int, ICommonRole> mRoleColliderMapper;
 
         public override void Init()
         {
             base.Init();
 
-            mRoleColliderMapper = new KeyValueList<int, IFWRole>();
+            mRoleColliderMapper = new KeyValueList<int, ICommonRole>();
         }
 
         public override int SetEntitas(IShipDockEntitas target)
@@ -23,7 +23,7 @@ namespace FWGame
             int id = base.SetEntitas(target);
             if(id >= 0)
             {
-                IFWRole role = target as IFWRole;
+                ICommonRole role = target as ICommonRole;
                 int subgroupID = role.RoleMustSubgroup.roleColliderID;
                 mRoleColliderMapper[subgroupID] = role;
             }
@@ -36,7 +36,7 @@ namespace FWGame
 
             if(statu == 0)
             {
-                IFWRole role = entitas as IFWRole;
+                ICommonRole role = entitas as ICommonRole;
                 int colliderID = role.RoleMustSubgroup.roleColliderID;
                 mRoleColliderMapper.Remove(colliderID);
             }
@@ -47,7 +47,7 @@ namespace FWGame
             base.Execute(time, ref target);
 
             int blockID;
-            mRole = target as IFWRole;
+            mRole = target as ICommonRole;
 
             bool isGetEnemy = false;
             mRoleColliding = mRole.CollidingRoles;

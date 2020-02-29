@@ -1,16 +1,15 @@
 ﻿using ShipDock.ECS;
 using ShipDock.Tools;
-using UnityEngine;
 
-namespace FWGame
+namespace ShipDock.Applications
 {
     public class RoleMustComponent : ShipDockComponent
     {
 
-        private IFWRole mRoleItem = default;
-        private KeyValueList<IFWRole, int> mRigidbodySubgourp;
-        private KeyValueList<IFWRole, int> mRoleColliderSubgourp;
-        private KeyValueList<IFWRole, int> mAnimatorSubgourp;
+        private ICommonRole mRoleItem = default;
+        private KeyValueList<ICommonRole, int> mRigidbodySubgourp;
+        private KeyValueList<ICommonRole, int> mRoleColliderSubgourp;
+        private KeyValueList<ICommonRole, int> mAnimatorSubgourp;
 
         public override int SetEntitas(IShipDockEntitas target)
         {
@@ -18,9 +17,9 @@ namespace FWGame
 
             if (id >= 0)
             {
-                mRoleItem = target as IFWRole;
+                mRoleItem = target as ICommonRole;
 
-                FWRoleMustSubgroup subgroup = mRoleItem.RoleMustSubgroup;
+                CommonRoleMustSubgroup subgroup = mRoleItem.RoleMustSubgroup;
                 SetSubgroupMap(ref mRigidbodySubgourp, subgroup.rigidbodyID);
                 SetSubgroupMap(ref mRoleColliderSubgourp, subgroup.roleColliderID);
                 SetSubgroupMap(ref mAnimatorSubgourp, subgroup.animatorID);
@@ -33,27 +32,26 @@ namespace FWGame
         {
             base.FreeEntitas(mid, ref entitas, out statu);
 
-            mRoleItem = entitas as IFWRole;
+            mRoleItem = entitas as ICommonRole;
 
             RemoveSubgroupMap(ref mRigidbodySubgourp, ref mRoleItem);
             RemoveSubgroupMap(ref mRoleColliderSubgourp, ref mRoleItem);
             RemoveSubgroupMap(ref mAnimatorSubgourp, ref mRoleItem);
         }
 
-        private void SetSubgroupMap(ref KeyValueList<IFWRole, int> mapper, int mid)
+        private void SetSubgroupMap(ref KeyValueList<ICommonRole, int> mapper, int mid)
         {
             if(mapper == default)
             {
-                mapper = new KeyValueList<IFWRole, int>();
+                mapper = new KeyValueList<ICommonRole, int>();
             }
             if(!mapper.ContainsKey(mRoleItem))
             {
-                //Debug.Log(mid);
                 mapper[mRoleItem] = mid;
             }
         }
 
-        private void RemoveSubgroupMap(ref KeyValueList<IFWRole, int> mapper, ref IFWRole target)
+        private void RemoveSubgroupMap(ref KeyValueList<ICommonRole, int> mapper, ref ICommonRole target)
         {
             if (mapper.ContainsKey(mRoleItem))
             {
@@ -61,17 +59,17 @@ namespace FWGame
             }
         }
 
-        public int GetRigidbody(ref IFWRole target)
+        public int GetRigidbody(ref ICommonRole target)
         {
             return mRigidbodySubgourp.ContainsKey(target) ? mRigidbodySubgourp[target] : default;
         }
 
-        public int GetCollider(ref IFWRole target)
+        public int GetCollider(ref ICommonRole target)
         {
             return mRoleColliderSubgourp.ContainsKey(target) ? mRoleColliderSubgourp[target] : default;
         }
 
-        public int GetAnimator(ref IFWRole target)
+        public int GetAnimator(ref ICommonRole target)
         {
             return mAnimatorSubgourp.ContainsKey(target) ? mAnimatorSubgourp[target] : default;
         }

@@ -1,6 +1,6 @@
-﻿namespace FWGame
+﻿namespace ShipDock.Applications
 {
-    public class RoleAnimatorInfo
+    public class CommonRoleAnimatorInfo
     {
         public bool IsNameGrounded { get; set; }
         public float RunCycleLegOffset { get; set; } = 0.2f;

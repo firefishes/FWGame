@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class TestComponent : MonoBehaviour
 {
-    private FWRole role;
+    private RoleEntitas role;
 
     // Start is called before the first frame update
     void Start()
     {
-        role = new FWRole
+        role = new RoleEntitas
         {
             Position = transform.localPosition,
             Direction = new Vector3(0, 0, UnityEngine.Random.Range(0.1f, 5f))

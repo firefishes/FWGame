@@ -1,4 +1,5 @@
-﻿using ShipDock.ECS;
+﻿using ShipDock.Applications;
+using ShipDock.ECS;
 
 namespace FWGame
 {
@@ -9,13 +10,13 @@ namespace FWGame
 
     public class RoleNormalEnterSceneBehavior : RoleBehavior
     {
-        private FWRole mRole;
+        private RoleEntitas mRole;
 
         public override void Execute(int time, ref IShipDockEntitas target)
         {
             base.Execute(time, ref target);
 
-            mRole = target as FWRole;
+            mRole = target as RoleEntitas;
             if(mRole.Gravity)
             {
                 mRole.Gravity = true;
