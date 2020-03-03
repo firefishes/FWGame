@@ -1,6 +1,8 @@
 ﻿using ShipDock.ECS;
 using UnityEngine;
+#if CROSS_PLATFORM_INPUT
 using UnityStandardAssets.CrossPlatformInput;
+#endif
 
 namespace ShipDock.Applications
 {
@@ -10,6 +12,9 @@ namespace ShipDock.Applications
         protected ICommonRole mRoleItem;
 
         private bool mIsRelaterInited;
+        private float mInputX;
+        private float mInputY;
+        private Vector3 mInputV;
         private IRoleData mRoleData;
         private IRoleInput mRoleInput;
         private ServerRelater mRelater;
@@ -77,20 +82,28 @@ namespace ShipDock.Applications
                 S server = GetMainServer<S>();
                 MainInputer = server.MainInputer;
             }
-            float x = GetHorizontal();
-            float y = GetVertical();
-            Vector3 m = new Vector3(x, y);
-            mRoleInput.SetUserInputValue(m);
+            mInputX = GetHorizontal();
+            mInputY = GetVertical();
+            mInputV = new Vector3(mInputX, mInputY);
+            mRoleInput.SetUserInputValue(mInputV);
         }
 
         protected virtual float GetHorizontal()
         {
+#if CROSS_PLATFORM_INPUT
             return CrossPlatformInputManager.GetAxis("Horizontal");
+#else
+            return 0f;
+#endif
         }
 
         protected virtual float GetVertical()
         {
+#if CROSS_PLATFORM_INPUT
             return CrossPlatformInputManager.GetAxis("Vertical");
+#else
+            return 0f;
+#endif
         }
 
         private void CheckRelaterInited()

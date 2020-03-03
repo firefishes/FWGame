@@ -57,6 +57,7 @@ namespace ShipDock.Applications
         {
             IParamNotice<IInputer> notice = target as IParamNotice<IInputer>;
             MainInputer = notice.ParamValue;
+            MainInputer.CommitAfterSetToServer();
         }
 
         public IInputer MainInputer { get; protected set; }

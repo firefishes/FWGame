@@ -6,12 +6,32 @@ namespace ShipDock.Applications
 {
     public class InputerComponent : MonoBehaviour, IInputer
     {
+        [SerializeField]
+        protected string m_MainServerName;
+
         private ComponentBridge mCompBrigde;
 
-        private void Awake()
+        protected ServerRelater mRelater;
+
+        protected virtual void Awake()
         {
+            mRelater = new ServerRelater
+            {
+                ComponentNames = RelatedComponentNames
+            };
+
             mCompBrigde = new ComponentBridge(OnInited);
             mCompBrigde.Start();
+        }
+
+        private void OnDestroy()
+        {
+            
+        }
+
+        protected virtual void Purge()
+        {
+
         }
 
         protected virtual void OnInited()
@@ -19,15 +39,29 @@ namespace ShipDock.Applications
             mCompBrigde.Dispose();
             mCompBrigde = default;
 
-            MainServerdName.DeliveParam<MainServer, IInputer>("SetInputer", "SetInputerParamer", OnSetFWInputer);
+            mRelater.CommitRelate();
+
+            SetMainServerName();
+            MainServerdName.DeliveParam<MainServer, IInputer>("SetInputer", "SetInputerParamer", OnSetInputer);
+        }
+
+        protected virtual void SetMainServerName()
+        {
+            MainServerdName = m_MainServerName;
         }
 
         [Resolvable("SetInputerParamer")]
-        private void OnSetFWInputer(ref IParamNotice<IInputer> target)
+        private void OnSetInputer(ref IParamNotice<IInputer> target)
         {
             target.ParamValue = this;
         }
 
-        protected virtual string MainServerdName { get; }
+        public virtual void CommitAfterSetToServer()
+        {
+        }
+
+        protected virtual int[] RelatedComponentNames { get; }
+
+        public virtual string MainServerdName { get; protected set; }
     }
 }
