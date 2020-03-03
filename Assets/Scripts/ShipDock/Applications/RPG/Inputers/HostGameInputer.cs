@@ -12,8 +12,11 @@ namespace ShipDock.Applications
         [SerializeField]
         private HostGameInputerButtons m_InputerButtons;
 
+        private int mAxisCount;
+        private float mAxisValue;
         private string mDirectionKey;
         private string[] mDirectionButtons;
+        private string[] mDirectionAxis;
         private IHostGameInputComponent mHostGameInputComp;
 
         protected override void Awake()
@@ -35,7 +38,9 @@ namespace ShipDock.Applications
 
         private void SetDirectionsKeys()
         {
-            mDirectionButtons = m_InputerButtons.directionButtons;
+            mDirectionAxis = InputerButtonsKeys.DIRECTION_AXIS;
+            mDirectionButtons = m_InputerButtons.axis;
+            mAxisCount = mDirectionButtons.Length;
         }
 
         private void Update()
@@ -45,20 +50,17 @@ namespace ShipDock.Applications
 
         private void CheckDirectionsButtons()
         {
-            int max = mDirectionButtons.Length;
-            for (int i = 0; i < max; i++)
+            if (mDirectionButtons == default)
+            {
+                return;
+            }
+            
+            for (int i = 0; i < mAxisCount; i++)
             {
                 mDirectionKey = mDirectionButtons[i];
-                bool isDirectionKeyGet = Input.GetButton(mDirectionKey);
-                bool isButtonActived = m_InputerButtons.GetButton(mDirectionKey);
-                if (isDirectionKeyGet && !isButtonActived)
-                {
-                    m_InputerButtons.SetActiveButton(mDirectionKey, true);
-                }
-                else
-                {
-                    m_InputerButtons.SetActiveButton(mDirectionKey, false);
-                }
+                mAxisValue = Input.GetAxis(mDirectionKey);
+                m_InputerButtons.SetAxis(mDirectionAxis[i], mAxisValue);
+                m_InputerButtons.SetActiveButton(mDirectionAxis[i], (mAxisValue != 0f));
             }
         }
     }

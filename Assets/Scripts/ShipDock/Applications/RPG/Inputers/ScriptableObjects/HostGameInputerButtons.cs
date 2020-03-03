@@ -10,8 +10,8 @@ namespace ShipDock.Applications
     {
         public string[] directionButtons = new string[]
         {
-            "left", "right", "down", "up"
         };
+
         public string[] axis = new string[]
         {
             "Horizontal", "Vertical"
@@ -27,11 +27,6 @@ namespace ShipDock.Applications
 
         public virtual void Init()
         {
-            int max = directionButtons.Length;
-            for (int i = 0; i < max; i++)
-            {
-                AddButtonMap(InputerButtonsKeys.DIRECTION_KEYS[i], directionButtons[i]);
-            }
             InitAxisValues();
         }
 

@@ -1,10 +1,9 @@
-﻿using ShipDock.Applications;
+﻿#if CROSS_PLATFORM_INPUT
 using UnityEngine;
-#if CROSS_PLATFORM_INPUT
 using UnityStandardAssets.CrossPlatformInput;
 #endif
 
-namespace FWGame
+namespace ShipDock.Applications
 {
     public class TouchPadsInputer : InputerComponent
     {

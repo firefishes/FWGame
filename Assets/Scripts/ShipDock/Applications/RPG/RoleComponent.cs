@@ -263,7 +263,10 @@ namespace ShipDock.Applications
             {
                 m_Hp = mRole.RoleDataSource.Hp;
                 m_Speed = mRole.SpeedCurrent;
-                m_NavMeshAgent.speed = mRole.SpeedCurrent;
+                if(m_NavMeshAgent != default)
+                {
+                    m_NavMeshAgent.speed = mRole.SpeedCurrent;
+                }
                 mRoleInput = mRole.RoleInput;
 
                 if(!mIsRoleNameSynced && !string.IsNullOrEmpty(mRole.Name))
