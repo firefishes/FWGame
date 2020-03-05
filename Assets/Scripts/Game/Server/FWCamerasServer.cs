@@ -3,36 +3,19 @@ using ShipDock.Datas;
 using ShipDock.Notices;
 using ShipDock.Pooling;
 using ShipDock.Server;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace FWGame
 {
-    public class FWCamerasServer : Server, IDataExtracter
+    public class FWCamerasServer : CamerasServer<FWCamerLens, FWPlayerData>
     {
-        private ServerRelater mRelater;
-        private FWCamerLens mLens;
-
-        public FWCamerasServer()
+        public FWCamerasServer() : base()
         {
-            ServerName = FWConsts.SERVER_FW_LENS;
-
-            mRelater = new ServerRelater()
-            {
-                DataNames = new int[]
-                {
-                    FWConsts.DATA_PLAYER
-                }
-            };
         }
 
         public override void InitServer()
         {
             base.InitServer();
 
-            Register<IParamNotice<FWCamerLens>>(SetLensParamer, Pooling<ParamNotice<FWCamerLens>>.Instance);
             Register<IParamNotice<FWRoleComponent>>(PlayerRoleChoosenParamer, Pooling<ParamNotice<FWRoleComponent>>.Instance);
 
         }
@@ -40,18 +23,10 @@ namespace FWGame
         [Resolvable("PlayerRoleChoosen")]
         private void PlayerRoleChoosenParamer(ref IParamNotice<FWRoleComponent> target) { }
 
-        [Resolvable("SetLensParamer")]
-        private void SetLensParamer(ref IParamNotice<FWCamerLens> target) { }
-
         public override void ServerReady()
         {
             base.ServerReady();
 
-            mRelater.CommitRelate();
-            FWPlayerData playerData = mRelater.DataRef<FWPlayerData>(FWConsts.DATA_PLAYER);
-            playerData.Register(this);
-
-            Add<IParamNotice<FWCamerLens>>(SetLens);
             Add<IParamNotice<FWRoleComponent>>(SetChoosenPlayer);
         }
 
@@ -59,29 +34,26 @@ namespace FWGame
         private void SetChoosenPlayer<I>(ref I target)
         {
             FWRoleComponent role = (target as IParamNotice<FWRoleComponent>).ParamValue;
-            Transform tf = mLens.CameraFollower.transform;
-            tf.SetParent(role.CameraNode);
-            tf.localPosition = Vector3.zero;
-            tf.localRotation = role.CameraNode.localRotation;
+            SetCameraParent(role.CameraNode);
         }
 
-        [Callable("SetLens", "SetLensParamer")]
-        private void SetLens<I>(ref I target)
+        override public void OnDataChanged(IData data, int keyName)
         {
-            mLens = (target as IParamNotice<FWCamerLens>).ParamValue;
-        }
+            base.OnDataChanged(data, keyName);
 
-        public void OnDataChanged(IData data, int keyName)
-        {
-            switch(keyName)
+            switch (keyName)
             {
                 case FWConsts.DC_PLAYER_ROLE_CHOOSEN:
                     FWPlayerData playerData = data as FWPlayerData;
                     IParamNotice<int> paramNotice = Resolve<IParamNotice<int>>("IntParamer");
                     paramNotice.ParamValue = FWConsts.NOTICE_PLAYER_ROLE_CHOOSEN;
-                    playerData.PlayerCurrentRole.SourceID.Dispatch(paramNotice);
+                    int msg = playerData.PlayerCurrentRole.SourceID;
+                    msg.Dispatch(paramNotice);
                     break;
             }
         }
+
+        protected override string LensServerName { get; } = FWConsts.SERVER_FW_LENS;
+        protected override int DataName { get; } = FWConsts.DATA_PLAYER;
     }
 }

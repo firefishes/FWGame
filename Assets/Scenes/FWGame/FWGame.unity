@@ -290,7 +290,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 571632032}
-  m_LocalRotation: {x: -0.0053312164, y: -0.120883204, z: -0.0006713202, w: 0.99265224}
+  m_LocalRotation: {x: -0.0053311707, y: -0.12090084, z: -0.00067140965, w: 0.9926501}
   m_LocalPosition: {x: -19.74, y: 1.8800001, z: -8.37986}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -605,6 +605,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f45002dc189544cb7d3fa86b479214, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_LensServerName: ServerFWLens
   m_CameraGroups:
   - m_Name: main
     m_VirturalCamera: {fileID: 571632034}
@@ -777,22 +778,22 @@ PrefabInstance:
     - target: {fileID: 3214361975813484027, guid: d0543125be67c414c9a5a7fa0d1a8b23,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.0053312164
+      value: -0.0053311707
       objectReference: {fileID: 0}
     - target: {fileID: 3214361975813484027, guid: d0543125be67c414c9a5a7fa0d1a8b23,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.120883204
+      value: -0.12090084
       objectReference: {fileID: 0}
     - target: {fileID: 3214361975813484027, guid: d0543125be67c414c9a5a7fa0d1a8b23,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0006713202
+      value: -0.00067140965
       objectReference: {fileID: 0}
     - target: {fileID: 3214361975813484027, guid: d0543125be67c414c9a5a7fa0d1a8b23,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.99265224
+      value: 0.9926501
       objectReference: {fileID: 0}
     - target: {fileID: 3214361975813484027, guid: d0543125be67c414c9a5a7fa0d1a8b23,
         type: 3}

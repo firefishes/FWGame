@@ -1,6 +1,4 @@
 ﻿using ShipDock.Applications;
-using ShipDock.Notices;
-using ShipDock.Pooling;
 using ShipDock.Server;
 
 namespace FWGame

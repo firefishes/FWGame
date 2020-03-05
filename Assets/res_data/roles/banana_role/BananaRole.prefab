@@ -1608,7 +1608,6 @@ MonoBehaviour:
   m_NavMeshAgent: {fileID: 8399453597497280760}
   m_Hp: 0
   m_Speed: 0
-  m_Camp: 0
   m_RunCycleLegOffset: 0.2
   m_AnimSpeedMultiplier: 1
   m_MoveSpeedMultiplier: 1
@@ -1623,6 +1622,8 @@ MonoBehaviour:
   m_RoleCollider: {fileID: 1898886553234552640}
   m_RoleAnimator: {fileID: 1898886553230531590}
   m_CameraNode: {fileID: 9154888195141663110}
+  m_IsShowEnemyPos: 0
+  m_Camp: 0
 --- !u!1 &1898886553237865356
 GameObject:
   m_ObjectHideFlags: 0

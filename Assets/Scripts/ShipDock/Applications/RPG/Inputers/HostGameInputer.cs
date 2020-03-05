@@ -43,7 +43,7 @@ namespace ShipDock.Applications
             mAxisCount = mDirectionButtons.Length;
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             CheckDirectionsButtons();
         }

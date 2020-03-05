@@ -201,6 +201,11 @@ namespace ShipDock.Editors
 
         private void CreateAssetItemWithButton()
         {
+            if (ResList == default)
+            {
+                return;
+            }
+
             int max = ResList.Length;
             UnityEngine.Object item;
             string fieldValue;
