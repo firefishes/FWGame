@@ -1,7 +1,4 @@
-﻿using ShipDock.Tools;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ShipDock.Applications
 {
@@ -47,7 +44,7 @@ namespace ShipDock.Applications
         {
             CheckDirectionsButtons();
         }
-
+        
         private void CheckDirectionsButtons()
         {
             if (mDirectionButtons == default)

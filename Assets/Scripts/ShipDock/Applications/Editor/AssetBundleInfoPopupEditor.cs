@@ -205,7 +205,6 @@ namespace ShipDock.Editors
             {
                 return;
             }
-
             int max = ResList.Length;
             UnityEngine.Object item;
             string fieldValue;
