@@ -22,7 +22,7 @@ namespace FWGame
             ShipDockApp app = ShipDockApp.Instance;
             var components = app.Components;
             components.Create<RoleMustComponent>(FWConsts.COMPONENT_ROLE_MUST);
-            components.Create<RoleCampComponent>(FWConsts.COMPONENT_ROLE_CAMP);
+            components.Create<FWRoleCampComponent>(FWConsts.COMPONENT_ROLE_CAMP);
             components.Create<FWUserInputComponent>(FWConsts.COMPONENT_ROLE_INPUT);
             components.Create<PositionComponent>(FWConsts.COMPONENT_POSITION);
             components.Create<RoleNormalEnterSceneBehavior>(FWConsts.COMPONENT_ROLE_NORMAL_ENTER_SCENE);

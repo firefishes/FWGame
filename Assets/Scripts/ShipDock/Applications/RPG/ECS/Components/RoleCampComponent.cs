@@ -1,15 +1,21 @@
-﻿using System.Collections.Generic;
-using ShipDock.ECS;
+﻿using ShipDock.ECS;
 using ShipDock.Notices;
+using ShipDock.Server;
 using ShipDock.Tools;
+using System.Collections.Generic;
 
-namespace FWGame
+namespace ShipDock.Applications
 {
-    public class RoleCampComponent : ShipDockComponent
+    public interface IDataServer : IServer
     {
-        private FWDataServer mDataServer;
-        private IFWRole mRoleTarget;
-        private IFWRole mRoleEntitas;
+
+    }
+
+    public abstract class RoleCampComponent : ShipDockComponent
+    {
+        protected IDataServer mDataServer;
+        private ICommonRole mRoleTarget;
+        private ICommonRole mRoleEntitas;
         private List<int> mAllRoles;
         private KeyValueList<int, List<int>> mCampRoles;
 
@@ -19,15 +25,15 @@ namespace FWGame
 
             mAllRoles = new List<int>();
             mCampRoles = new KeyValueList<int, List<int>>();
-            mDataServer = FWConsts.SERVER_FW_DATAS.GetServer<FWDataServer>();
+            mDataServer = DataServerName.GetServer<IDataServer>();
         }
 
         public override int SetEntitas(IShipDockEntitas target)
         {
             int id = base.SetEntitas(target);
-            if(id >= 0)
+            if (id >= 0)
             {
-                RoleCreated = target as IFWRole;
+                RoleCreated = target as ICommonRole;
                 int campID = RoleCreated.Camp;
                 List<int> list;
                 if (mCampRoles.IsContainsKey(campID))
@@ -40,11 +46,11 @@ namespace FWGame
                     mCampRoles[campID] = list;
                 }
                 list.Add(id);
-                if(!mAllRoles.Contains(id))
+                if (!mAllRoles.Contains(id))
                 {
                     mAllRoles.Add(id);
                 }
-                mDataServer.Delive<IParamNotice<IFWRole>>("AddCampRole", "CampRoleCreated");
+                mDataServer.Delive<IParamNotice<ICommonRole>>(AddCampRoleResovlerName, CampRoleCreatedAlias);
                 RoleCreated = default;
             }
             return id;
@@ -53,9 +59,9 @@ namespace FWGame
         protected override void FreeEntitas(int mid, ref IShipDockEntitas entitas, out int statu)
         {
             base.FreeEntitas(mid, ref entitas, out statu);
-            if(statu == 0)
+            if (statu == 0)
             {
-                IFWRole role = entitas as IFWRole;
+                ICommonRole role = entitas as ICommonRole;
                 int campID = role.Camp;
                 List<int> list;
                 if (mCampRoles.IsContainsKey(campID))
@@ -74,13 +80,13 @@ namespace FWGame
         {
             base.Execute(time, ref target);
 
-            mRoleTarget = target as IFWRole;
+            mRoleTarget = target as ICommonRole;
             int id;
             int max = mAllRoles.Count;
             for (int i = 0; i < max; i++)
             {
                 id = mAllRoles[i];
-                mRoleEntitas = GetEntitas(id) as IFWRole;
+                mRoleEntitas = GetEntitas(id) as ICommonRole;
                 if ((mRoleEntitas != default) && (mRoleTarget != default))
                 {
                     if (!mRoleTarget.IsUserControlling &&
@@ -96,7 +102,9 @@ namespace FWGame
             }
         }
 
-        public IFWRole RoleCreated { get; private set; }
+        public ICommonRole RoleCreated { get; private set; }
+        public abstract string DataServerName { get; }
+        public abstract string AddCampRoleResovlerName { get; }
+        public abstract string CampRoleCreatedAlias { get; }
     }
-
 }

@@ -4,8 +4,6 @@ namespace FWGame
 {
     public class FWRole : RoleEntitas, IFWRole
     {
-        public int Camp { get; set; }
-
         protected override int[] ComponentIDs { get; } = new int[]
         {
             FWConsts.COMPONENT_ROLE_INPUT,

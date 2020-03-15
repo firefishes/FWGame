@@ -47,8 +47,8 @@ namespace FWGame
         {
             new ResolvableConfigItem<INotice, GameNotice>("GameNotice"),
             new ResolvableConfigItem<IParamNotice<FWRoleComponent>, ParamNotice<FWRoleComponent>>("PlayerRoleChoosen"),
-            new ResolvableConfigItem<IParamNotice<IFWRole>, CampRoleNotice>("CampRoleCreated"),
-            new ResolvableConfigItem<IParamNotice<IFWRole>, ParamNotice<IFWRole>>("SetUserFWRole"),
+            new ResolvableConfigItem<IParamNotice<ICommonRole>, CampRoleNotice>("CampRoleCreated"),
+            new ResolvableConfigItem<IParamNotice<ICommonRole>, ParamNotice<ICommonRole>>("SetUserFWRole"),
             new ResolvableConfigItem<IParamNotice<FWCamerLens>, ParamNotice<FWCamerLens>>("SetLensParamer"),
         };
 

@@ -1,4 +1,5 @@
 ﻿using ShipDock.Applications;
+using ShipDock.Datas;
 using ShipDock.Notices;
 using ShipDock.Pooling;
 using ShipDock.Server;
@@ -6,40 +7,20 @@ using UnityEngine;
 
 namespace FWGame
 {
-    public class FWDataServer : Server
+    public class FWDataServer : RolesDataServer
     {
         private int mRoleIndex;
-        private ServerRelater mRelater;
 
-        public FWDataServer()
+        public FWDataServer() : base()
         {
-            ServerName = FWConsts.SERVER_FW_DATAS;
-            mRelater = new ServerRelater
-            {
-                DataNames = new int[]
-                {
-                    FWConsts.DATA_GAME,
-                    FWConsts.DATA_PLAYER
-                },
-                ComponentNames = new int[]
-                {
-                    FWConsts.COMPONENT_ROLE_CAMP
-                }
-            };
-
         }
 
         public override void InitServer()
         {
             base.InitServer();
             
-            ShipDockApp app = ShipDockApp.Instance;
-            var datas = app.Datas;
-            datas.AddData(new FWGameData());
-            datas.AddData(new FWPlayerData());
-
-            Register<IParamNotice<IFWRole>>(CampRoleCreated, Pooling<CampRoleNotice>.Instance);
-            Register<IParamNotice<IFWRole>>(SetUserFWRoleResolver, Pooling<ParamNotice<IFWRole>>.Instance);
+            Register<IParamNotice<ICommonRole>>(CampRoleCreated, Pooling<CampRoleNotice>.Instance);
+            Register<IParamNotice<ICommonRole>>(SetUserFWRoleResolver, Pooling<ParamNotice<ICommonRole>>.Instance);
 
         }
 
@@ -49,39 +30,58 @@ namespace FWGame
             
             mRelater.CommitRelate();
 
-            Add<IParamNotice<IFWRole>>(AddCampRole);
-            Add<IParamNotice<IFWRole>>(SetUserFWRole);
+            Add<IParamNotice<ICommonRole>>(AddCampRole);
+            Add<IParamNotice<ICommonRole>>(SetUserFWRole);
         }
 
         [Resolvable("SetUserFWRole")]
         private void SetUserFWRoleResolver<I>(ref I target) { }
 
         [Resolvable("CampRoleCreated")]
-        private void CampRoleCreated(ref IParamNotice<IFWRole> target)
+        private void CampRoleCreated(ref IParamNotice<ICommonRole> target)
         {
-            var component = mRelater.ComponentRef<RoleCampComponent>(FWConsts.COMPONENT_ROLE_CAMP);
+            var component = mRelater.ComponentRef<FWRoleCampComponent>(FWConsts.COMPONENT_ROLE_CAMP);
             target.ParamValue = component.RoleCreated;
         }
 
         [Callable("AddCampRole", "CampRoleCreated")]
-        private void AddCampRole(ref IParamNotice<IFWRole> target)
+        private void AddCampRole(ref IParamNotice<ICommonRole> target)
         {
             Debug.Log(target.ParamValue);
             var data = mRelater.DataRef<FWGameData>(FWConsts.DATA_GAME);
-            data.AddCampRole(target.ParamValue);
+            data.AddCampRole(target.ParamValue as IFWRole);
             target.ParamValue.Name = "Role_" + mRoleIndex;
             mRoleIndex++;
         }
 
         [Callable("SetUserFWRole", "SetUserFWRole")]
-        private void SetUserFWRole(ref IParamNotice<IFWRole> target)
+        private void SetUserFWRole(ref IParamNotice<ICommonRole> target)
         {
-            IParamNotice<IFWRole> notice = target as IParamNotice<IFWRole>;
-            IFWRole role = notice.ParamValue;
+            IParamNotice<ICommonRole> notice = target as IParamNotice<ICommonRole>;
+            IFWRole role = notice.ParamValue as IFWRole;
 
             FWPlayerData data =  mRelater.DataRef<FWPlayerData>(FWConsts.DATA_PLAYER);
             data.SetCurrentRole(role);
         }
+
+        public override int[] RelatedDataNames { get; } = new int[]
+        {
+            FWConsts.DATA_GAME,
+            FWConsts.DATA_PLAYER
+        };
+
+        public override int[] RelatedComponentNames { get; } = new int[]
+        {
+            FWConsts.COMPONENT_ROLE_CAMP
+        };
+
+        public override IData[] DataList { get; } = new IData[]
+        {
+            new FWGameData(),
+            new FWPlayerData()
+        };
+
+        public override string DataServerName { get; } = FWConsts.SERVER_FW_DATAS;
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using ShipDock.Notices;
+﻿using ShipDock.Applications;
+using ShipDock.Notices;
 using ShipDock.Server;
 using ShipDock.Tools;
 using ShipDock.UI;
@@ -54,13 +55,13 @@ namespace FWGame
             SelectedRoleModel = target;
             SelectedRoleModel.SetUserControll(true);
 
-            FWConsts.SERVER_FW_DATAS.DeliveParam<FWDataServer, IFWRole>("SetUserFWRole", "SetUserFWRole", OnSetUserFWRole);
+            FWConsts.SERVER_FW_DATAS.DeliveParam<FWDataServer, ICommonRole>("SetUserFWRole", "SetUserFWRole", OnSetUserFWRole);
         }
 
         [Resolvable("SetUserFWRole")]
-        private void OnSetUserFWRole(ref IParamNotice<IFWRole> target)
+        private void OnSetUserFWRole(ref IParamNotice<ICommonRole> target)
         {
-            (target as IParamNotice<IFWRole>).ParamValue = SelectedRoleModel.role;
+            (target as IParamNotice<ICommonRole>).ParamValue = SelectedRoleModel.role;
         }
 
         public KeyValueList<int, UIRoleCard> RoleCardMapper { get; private set; } = new KeyValueList<int, UIRoleCard>();

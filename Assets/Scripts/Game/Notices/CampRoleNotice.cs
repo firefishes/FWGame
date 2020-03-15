@@ -1,8 +1,9 @@
-﻿using ShipDock.Notices;
+﻿using ShipDock.Applications;
+using ShipDock.Notices;
 
 namespace FWGame
 {
-    public class CampRoleNotice : ParamNotice<IFWRole>
+    public class CampRoleNotice : ParamNotice<ICommonRole>
     {
 
     }

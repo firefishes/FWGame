@@ -4,6 +4,5 @@ namespace FWGame
 {
     public interface IFWRole : ICommonRole
     {
-        int Camp { get; set; }
     }
 }
