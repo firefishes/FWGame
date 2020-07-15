@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ShipDock.ECS
@@ -15,13 +16,18 @@ namespace ShipDock.ECS
 
     public interface IPathFindable : IPositionEntitas
     {
+        float GetStopDistance();
+        bool AfterGetStopDistance(float dist, Vector3 entitasPos);
         void SetPahterTarget(Vector3 value);
         Vector3 PatherTargetPosition { get; }
-        bool FindngPath { get; set; }
+        bool FindingPath { get; set; }
+        bool AfterGetStopDistChecked { get; set; }
     }
 
     public interface ICollidableRole
     {
+        void CollidingChanged(int colliderID, bool isTrigger, bool isCollided);
+        Action<int, int, bool, bool> CollidingChanger { get; set; }
         List<int> CollidingRoles { get; }
     }
 

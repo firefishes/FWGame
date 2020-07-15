@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace FWGame
 {
-    public class FWDataServer : RolesDataServer
+    public class FWDataServer : DataServer
     {
         private int mRoleIndex;
 
@@ -28,8 +28,6 @@ namespace FWGame
         {
             base.ServerReady();
             
-            mRelater.CommitRelate();
-
             Add<IParamNotice<ICommonRole>>(AddCampRole);
             Add<IParamNotice<ICommonRole>>(SetUserFWRole);
         }

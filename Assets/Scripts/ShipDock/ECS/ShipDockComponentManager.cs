@@ -1,57 +1,122 @@
 ﻿using ShipDock.Interfaces;
 using ShipDock.Tools;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace ShipDock.ECS
 {
+    public static class ShipDockComponentManagerSetting
+    {
+        public static bool isMergeUpdateMode = false;
+        public static bool isUpdateByCallLate = false;
+    }
+
     public class ShipDockComponentManager : IShipDockComponentManager, IDispose
     {
+        private IShipDockComponent mComponent;
+        private List<int> mDeletdComponents;
         private KeyValueList<int, int> mIDMapper;
-        private IShipDockComponent mComponent = default;
         private IntegerMapper<IShipDockComponent> mMapper;
+        private List<IShipDockComponent> mUpdateByTicks;
+        private List<IShipDockComponent> mUpdateByScene;
+
+        private int mFinalUpdateTime;
+        private IShipDockEntitas mFinalUpdateEntitas;
+        private Action<int, IShipDockEntitas> mFinalUpdateMethod;
+
+        private DoubleBuffers<int> mQueueUpdateTime;
+        private DoubleBuffers<IShipDockEntitas> mQueueUpdateEntitas;
+        private DoubleBuffers<Action<int, IShipDockEntitas>> mQueueUpdateExecute;
 
         public ShipDockComponentManager()
         {
+            mComponent = default;
             mIDMapper = new KeyValueList<int, int>();
             mMapper = new IntegerMapper<IShipDockComponent>();
+
+            mDeletdComponents = new List<int>();
+            mUpdateByTicks = new List<IShipDockComponent>();
+            mUpdateByScene = new List<IShipDockComponent>();
+
+            mQueueUpdateTime = new DoubleBuffers<int>();
+            mQueueUpdateEntitas = new DoubleBuffers<IShipDockEntitas>();
+            mQueueUpdateExecute = new DoubleBuffers<Action<int, IShipDockEntitas>>();
+            
+            mQueueUpdateExecute.OnDequeue += OnQueueUpdateExecute;
         }
 
         public void Dispose()
         {
+            Utils.Reclaim(ref mUpdateByTicks);
+            Utils.Reclaim(ref mUpdateByScene);
+            Utils.Reclaim(ref mDeletdComponents);
             Utils.Reclaim(mMapper);
+            Utils.Reclaim(mIDMapper);
             mComponent = default;
         }
 
-        public int Create<T>(int aid) where T : IShipDockComponent, new()
+        public int Create<T>(int name, bool isUpdateByScene = false, params int[] willRelateComponents) where T : IShipDockComponent, new()
         {
-            T target = new T();
-            int id = mMapper.Add(target, out int statu);
-            if (statu == 0)
+            T target = new T
             {
-                target.SetComponentID(id);
-                target.Init();
-                mIDMapper[aid] = id;
+                RelateComponents = willRelateComponents
+            };
+            target.SetSceneUpdate(isUpdateByScene);
+            target.OnFinalUpdateForTime = OnFinalUpdateForTime;
+            target.OnFinalUpdateForEntitas = OnFinalUpdateForEntitas;
+            target.OnFinalUpdateForExecute = OnFinalUpdateForExecute;
+
+            int aid = mMapper.Add(target, out int statu);
+            if (isUpdateByScene)
+            {
+                mUpdateByScene.Add(target);
             }
             else
             {
-                id = -1;
+                mUpdateByTicks.Add(target);
             }
-            return id;
+
+            if (statu == 0)
+            {
+                mIDMapper[name] = aid;
+
+                target.SetComponentID(aid);
+                target.FillRelateComponents(this);
+                target.Init();
+                RelateComponentsReFiller?.Invoke(name, target, this);
+            }
+            else
+            {
+                aid = -1;
+            }
+            return aid;
+        }
+
+        private void OnFinalUpdateForExecute(Action<int, IShipDockEntitas> method)
+        {
+            mQueueUpdateExecute.Enqueue(method, false);
+        }
+
+        private void OnFinalUpdateForEntitas(IShipDockEntitas entitas)
+        {
+            mQueueUpdateEntitas.Enqueue(entitas, false);
+        }
+
+        private void OnFinalUpdateForTime(int time)
+        {
+            mQueueUpdateTime.Enqueue(time, false);
         }
 
         public T GetEntitasWithComponents<T>(params int[] aidArgs) where T : IShipDockEntitas, new()
         {
             T result = new T();
             int max = aidArgs.Length;
-            int id, aid;
+            int aid;
             IShipDockComponent component;
             for (int i = 0; i < max; i++)
             {
                 aid = aidArgs[i];
-                component = GetComponentByAID(aid);
+                component = RefComponentByName(aid);
                 if (component != default)
                 {
                     result.AddComponent(component);
@@ -60,12 +125,12 @@ namespace ShipDock.ECS
             return result;
         }
 
-        public IShipDockComponent GetComponentByAID(int aid)
+        public IShipDockComponent RefComponentByName(int name)
         {
             IShipDockComponent component = default;
-            if (mIDMapper.IsContainsKey(aid))
+            if (mIDMapper.IsContainsKey(name))
             {
-                int id = mIDMapper[aid];
+                int id = mIDMapper[name];
                 component = mMapper.Get(id);
             }
             return component;
@@ -73,70 +138,218 @@ namespace ShipDock.ECS
 
         public void RemoveComponent(IShipDockComponent target)
         {
-            int id;
-            int index = -1;
-            int max = mMapper.Size;
-            IShipDockComponent item = default;
+            if (!mDeletdComponents.Contains(target.ID))
+            {
+                mDeletdComponents.Add(target.ID);
+            }
+        }
+
+        public void RemoveSingedComponents()
+        {
+            int max = mDeletdComponents.Count;
             for (int i = 0; i < max; i++)
             {
-                id = mMapper.GetIDByIndex(i);
-                item = mMapper.Get(id);
-                if (target.ID == item.ID)
-                {
-                    index = mIDMapper.Values.IndexOf(id);
-                    mIDMapper.Remove(mIDMapper.Keys[index]);
-                    break;
-                }
-            }
-            if (item != default)
-            {
+                int id = mDeletdComponents[i];
+                IShipDockComponent target = mMapper.Get(id);
+                
+                int index = mIDMapper.Values.IndexOf(id);
+
+                id = mIDMapper.Keys[index];
+                mIDMapper.Remove(id);
+
                 if (index >= 0)
                 {
-                    mIDMapper.Remove(mIDMapper.Keys[index]);
+                    mIDMapper.Remove(id);
                 }
+                List<IShipDockComponent> updateList = target.IsSceneUpdate ? mUpdateByScene : mUpdateByTicks;
+                updateList.Remove(target);
                 mMapper.Remove(target, out int statu);
+
                 target.Dispose();
+
+            }
+            if(max > 0)
+            {
+                mDeletdComponents.Clear();
             }
         }
 
-        public void UpdateAndFreeComponents(int time)
+        public void UpdateAndFreeComponents(int time, Action<Action<int>> method = default)
         {
-            int id;
-            int max = mMapper.Size;
+            int max = mUpdateByTicks.Count;
             for (int i = 0; i < max; i++)
             {
-                id = mMapper.GetIDByIndex(i);
-                mComponent = mMapper.Get(id);
-                mComponent.UpdateComponent(time);
-                mComponent.FreeComponent(time);
+                mComponent = mUpdateByTicks[i];
+
+                if (!mDeletdComponents.Contains(mComponent.ID))
+                {
+                    if (method == default)
+                    {
+                        mComponent.UpdateComponent(time);
+                        mComponent.FreeComponent(time);
+                    }
+                    else
+                    {
+                        method.Invoke(mComponent.UpdateComponent);
+                        method.Invoke(mComponent.FreeComponent);
+                    }
+                }
+            }
+
+            FinalUpdate(time);
+
+            RemoveSingedComponents();
+        }
+
+        public void UpdateComponentUnit(int time, Action<Action<int>> method = default)
+        {
+            CountTime += time;
+
+            while (CountTime > FrameTimeInScene)
+            {
+                int max = mUpdateByTicks.Count;
+                for (int i = 0; i < max; i++)
+                {
+                    mComponent = mUpdateByTicks[i];
+
+                    if (!mDeletdComponents.Contains(mComponent.ID))
+                    {
+                        if (method == default)
+                        {
+                            mComponent.UpdateComponent(time);
+                        }
+                        else
+                        {
+                            method.Invoke(mComponent.UpdateComponent);
+                        }
+                    }
+                }
+
+                FinalUpdate(time);
+
+                CountTime -= FrameTimeInScene;
             }
         }
 
-        public void UpdateComponentUnit(Action<Action<int>> method)
+        private void OnQueueUpdateExecute(int time, Action<int, IShipDockEntitas> current)
         {
-            int id;
-            int max = mMapper.Size;
+            mFinalUpdateTime = mQueueUpdateTime.Current;
+            mFinalUpdateEntitas = mQueueUpdateEntitas.Current;
+            mFinalUpdateMethod = current;
+            
+            if (mFinalUpdateEntitas == default)
+            {
+                mFinalUpdateMethod.Invoke(mFinalUpdateTime, default);
+            }
+            else
+            {
+                if (!mFinalUpdateEntitas.WillDestroy && (mFinalUpdateEntitas.ID != int.MaxValue))
+                {
+                    mFinalUpdateMethod.Invoke(mFinalUpdateTime, mFinalUpdateEntitas);
+                }
+            }
+        }
+
+        private void FinalUpdate(int time)
+        {
+            mQueueUpdateTime.Step(time);
+            mQueueUpdateEntitas.Step(time);
+            mQueueUpdateExecute.Step(time);
+            mFinalUpdateEntitas = default;
+            mFinalUpdateMethod = default;
+        }
+
+        public void FreeComponentUnit(int time, Action<Action<int>> method = default)
+        {
+            int max = mUpdateByTicks.Count;
             for (int i = 0; i < max; i++)
             {
-                id = mMapper.GetIDByIndex(i);
-                mComponent = mMapper.Get(id);
-                method.Invoke(mComponent.UpdateComponent);
+                mComponent = mUpdateByTicks[i];
+                
+                if (!mDeletdComponents.Contains(mComponent.ID))
+                {
+                    if (method == default)
+                    {
+                        mComponent.FreeComponent(time);
+                    }
+                    else
+                    {
+                        method.Invoke(mComponent.FreeComponent);
+                    }
+                }
             }
         }
 
-        public void FreeComponentUnit(Action<Action<int>> method)
+        public void UpdateAndFreeComponentsInScene(int time, Action<Action<int>> method = default)
         {
-            int id;
-            int max = mMapper.Size;
+            int max = mUpdateByScene.Count;
             for (int i = 0; i < max; i++)
             {
-                id = mMapper.GetIDByIndex(i);
-                mComponent = mMapper.Get(id);
-                method.Invoke(mComponent.FreeComponent);
+                mComponent = mUpdateByScene[i];
+
+                if (!mDeletdComponents.Contains(mComponent.ID))
+                {
+                    if (method == default)
+                    {
+                        mComponent.UpdateComponent(time);
+                        mComponent.FreeComponent(time);
+                    }
+                    else
+                    {
+                        method.Invoke(mComponent.UpdateComponent);
+                        method.Invoke(mComponent.FreeComponent);
+                    }
+                }
+            }
+            RemoveSingedComponents();
+        }
+
+        public void UpdateComponentUnitInScene(int time, Action<Action<int>> method = default)
+        {
+            int max = mUpdateByScene.Count;
+            for (int i = 0; i < max; i++)
+            {
+                mComponent = mUpdateByScene[i];
+
+                if (!mDeletdComponents.Contains(mComponent.ID))
+                {
+                    if (method == default)
+                    {
+                        mComponent.UpdateComponent(time);
+                    }
+                    else
+                    {
+                        method.Invoke(mComponent.UpdateComponent);
+                    }
+                }
             }
         }
 
-        public Action<IShipDockComponent> CustomUpdate { get; set; }
+        public void FreeComponentUnitInScene(int time, Action<Action<int>> method = default)
+        {
+            int max = mUpdateByScene.Count;
+            for (int i = 0; i < max; i++)
+            {
+                mComponent = mUpdateByScene[i];
+
+                if (!mDeletdComponents.Contains(mComponent.ID))
+                {
+                    if (method == default)
+                    {
+                        mComponent.FreeComponent(time);
+                    }
+                    else
+                    {
+                        method.Invoke(mComponent.FreeComponent);
+                    }
+                }
+            }
+        }
+
         public bool Asynced { get; private set; }
+        public Action<IShipDockComponent> CustomUpdate { get; set; }
+        public Action<int, IShipDockComponent, IShipDockComponentManager> RelateComponentsReFiller { get; set; }
+        public int CountTime { get; private set; }
+        public int FrameTimeInScene { get; set; }
     }
 }

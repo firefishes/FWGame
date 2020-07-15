@@ -28,7 +28,7 @@ namespace ShipDock.Server
         private KeyValueList<int, IResolvableConfig> mResolvableConfigs;
         private IntegerMapper<string> mResolvableNameMapper;
 
-        public Servers()
+        public Servers(params Action[] onInites)
         {
             mServerMapper = new KeyValueList<string, IServer>();
 
@@ -45,6 +45,12 @@ namespace ShipDock.Server
             mBinderMapper = new Dictionary<int, ResolvableBinder>();
             mResolvablesMapper = new Dictionary<int, IResolvable>();
             mResolvableConfigs = new KeyValueList<int, IResolvableConfig>();
+            
+            int max = onInites.Length;
+            for (int i = 0; i < max; i++)
+            {
+                OnInit += onInites[i];
+            }
         }
 
         public void Dispose()
@@ -258,6 +264,10 @@ namespace ShipDock.Server
             {
                 OnFinished += method;
             }
+            //if (mNewServers.Count == 0)
+            //{
+            //    AfterServersInited();
+            //}
         }
 
         private int ComparerPriority(IServer n, IServer m)
@@ -361,7 +371,7 @@ namespace ShipDock.Server
                     if (item != default)
                     {
                         ResolvableInfo.FillResolvableInfo(id, ref item, out ResolvableInfo info);
-                        CreateOrAddResolvable(ref item, ref info, ref resolvableRef, out statu);
+                        CreateOrAddResolvable(ref info, ref resolvableRef, out statu);
 
                         if (statu == 0)
                         {
@@ -374,7 +384,7 @@ namespace ShipDock.Server
             return result;
         }
 
-        private void CreateOrAddResolvable(ref IResolvableConfig item, ref ResolvableInfo info, ref ResolvableBinder resolvableRef, out int statu)
+        private void CreateOrAddResolvable(ref ResolvableInfo info, ref ResolvableBinder resolvableRef, out int statu)
         {
             statu = 0;
             if (mBinderMapper.ContainsKey(info.aliasID))
@@ -399,6 +409,7 @@ namespace ShipDock.Server
 
         private int CheckAndFillResolvable<InterfaceT>(ref ResolvableBinder resolvableRef, out IResolvable resolvable, ResolveDelegate<InterfaceT> defaultResolver)
         {
+            int statu = 0;
             int result = (mBinderIDs == default) || (mResolvablesMapper == default) ? 1 : 0;
             int binderID = mBinderIDs.GetID(ref resolvableRef);
             if (mResolvablesMapper.ContainsKey(binderID))
@@ -412,11 +423,11 @@ namespace ShipDock.Server
                 resolvable = new Resolvable();
                 resolvable.Binding(ref resolvableRef);
                 resolvable.InitResolver<InterfaceT>(this, default);
-                resolvable.SetResolver(Resolvable.RESOLVER_CRT, defaultResolver, out int statu);
+                resolvable.SetResolver(Resolvable.RESOLVER_CRT, defaultResolver, out statu);
 
                 mResolvablesMapper[binderID] = resolvable;
             }
-            return result;
+            return result <= statu ? result : statu;
         }
 
         public IResolvable GetResolvable(int binderID, out int errorResult)

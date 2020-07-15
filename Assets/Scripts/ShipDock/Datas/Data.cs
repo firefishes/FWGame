@@ -1,9 +1,11 @@
-﻿using System;
+﻿using ShipDock.Interfaces;
+using ShipDock.Tools;
+using System;
 using System.Collections.Generic;
 
 namespace ShipDock.Datas
 {
-    public class Data : IData
+    public class Data : IData, IDispose
     {
         private List<IDataExtracter> mDataHandlers;
         private Action<IData, int> mOnDataChanged;
@@ -12,6 +14,12 @@ namespace ShipDock.Datas
         {
             DataName = dataName;
             mDataHandlers = new List<IDataExtracter>();
+        }
+
+        public virtual void Dispose()
+        {
+            Utils.Reclaim(ref mDataHandlers);
+            mOnDataChanged = default;
         }
 
         public void DataChanged(params int[] keys)
@@ -44,7 +52,7 @@ namespace ShipDock.Datas
             mDataHandlers.Remove(dataHandler);
             mOnDataChanged -= dataHandler.OnDataChanged;
         }
-        
+
         public int DataName { get; private set; }
     }
 }

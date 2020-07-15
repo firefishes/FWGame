@@ -9,11 +9,11 @@ public class TestComponent : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        role = new RoleEntitas
-        {
-            Position = transform.localPosition,
-            Direction = new Vector3(0, 0, UnityEngine.Random.Range(0.1f, 5f))
-        };
+        //role = new RoleEntitas
+        //{
+        //    Position = transform.localPosition,
+        //    Direction = new Vector3(0, 0, UnityEngine.Random.Range(0.1f, 5f))
+        //};
         ShipDockApp.Instance.AddStart(OnAppStart);
     }
 
@@ -24,8 +24,8 @@ public class TestComponent : MonoBehaviour
 
     private void OnServerStart()
     {
-        var component = ShipDockApp.Instance.Components.GetComponentByAID(1);
-        role.AddComponent(component);
+        //var component = ShipDockApp.Instance.Components.GetComponentByAID(1);
+        //role.AddComponent(component);
     }
 
     // Update is called once per frame

@@ -11,7 +11,7 @@ namespace ShipDock.ECS
         {
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             WillDestroy = true;
         }
@@ -26,7 +26,7 @@ namespace ShipDock.ECS
             }
         }
 
-        public void SetEntitasID(int id)
+        public virtual void SetEntitasID(int id)
         {
             if (ID == int.MaxValue)
             {

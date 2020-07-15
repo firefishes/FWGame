@@ -27,6 +27,7 @@ namespace ShipDock.Testers
     {
         public string format;
         public string logColor;
+        public System.Action onLoged;
     }
 
     public class Tester : Singletons<Tester>
@@ -39,8 +40,9 @@ namespace ShipDock.Testers
         private KeyValueList<string, List<Asserter>> mTesterMapper = new KeyValueList<string, List<Asserter>>();
         private KeyValueList<string, KeyValueList<int, LogItem>> mLoggerMapper = new KeyValueList<string, KeyValueList<int, LogItem>>();
 
-        public void Init()
+        public void Init<T>(T defaultTester) where T : ITester
         {
+            SetDefaultTester(defaultTester);
             Application.logMessageReceived += OnLogMessageReceived;
         }
 
@@ -88,10 +90,10 @@ namespace ShipDock.Testers
         }
 
         [System.Diagnostics.Conditional("G_LOG")]
-        public void AddLogger(ITester tester, int logID, string format, string logColor = "")
+        public void AddLogger(ITester tester, int logID, string format, string logColor = "", System.Action onLogedMethod = null)
         {
             KeyValueList<int, LogItem> list = mLoggerMapper[tester.Name];
-            list[logID] = new LogItem { format = format, logColor = logColor };
+            list[logID] = new LogItem { format = format, logColor = logColor, onLoged = onLogedMethod };
         }
 
         [System.Diagnostics.Conditional("G_LOG")]
@@ -168,6 +170,7 @@ namespace ShipDock.Testers
                         DebugUtils.LogInColor(logger.logColor, log);
                     }
                 }
+                logger.onLoged?.Invoke();
                 mLogCount++;
             }
         }

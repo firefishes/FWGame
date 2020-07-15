@@ -10,16 +10,16 @@ namespace FWGame
     {
         [SerializeField]
         private int m_Camp;
-
-        override protected void InitRoleData()
-        {
-            mRoleData = new FWRoleData();
-            m_Camp = UnityEngine.Random.Range(0, 2);
-        }
-
+        
         protected override void SetRoleEntitas()
         {
             mRole = new BananaRole();
+        }
+
+        protected override void SetRoleData()
+        {
+            base.SetRoleData();
+            m_Camp = UnityEngine.Random.Range(0, 2);
         }
 
         override protected void OnInited()
@@ -36,7 +36,7 @@ namespace FWGame
             {
                 ParamNotice<RoleEntitas> notice = Pooling<ParamNotice<RoleEntitas>>.From();
                 notice.ParamValue = mRole;
-                FWConsts.COMPONENT_ROLE_CONTROLLABLE.Dispatch(notice);
+                FWConsts.COMPONENT_ROLE_CONTROLLABLE.Broadcast(notice);
                 Pooling<ParamNotice<RoleEntitas>>.To(notice);
             }
         }
@@ -55,6 +55,11 @@ namespace FWGame
         private void OnRoleChoosen(ref IParamNotice<FWRoleComponent> target)
         {
             (target as IParamNotice<FWRoleComponent>).ParamValue = this;
+        }
+
+        protected override bool CheckUnableToMove()
+        {
+            return false;
         }
     }
 }

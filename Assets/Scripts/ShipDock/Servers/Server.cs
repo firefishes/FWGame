@@ -15,7 +15,7 @@ namespace ShipDock.Server
 
         public Server(string serverName = "")
         {
-            if(!string.IsNullOrEmpty(ServerName))
+            if(string.IsNullOrEmpty(ServerName))
             {
                 ServerName = serverName;
             }
@@ -61,13 +61,37 @@ namespace ShipDock.Server
                 resolverName = attribute.ResolverName;
                 resolverName = string.IsNullOrEmpty(resolverName) ? method.Name : resolverName;
                 alias = attribute.Alias;
-                resolvable = ServersHolder.GetResolvable(ref alias, out int resultError);
-                if (resultError == 0)
+                resolvable = ServersHolder.GetResolvable(ref alias, out statu);
+                if (statu == 0)
                 {
                     Tester.Instance.Log(TesterBaseApp.Instance, TesterBaseApp.LOG, resolvable == default, "error: Resolvable is null, alias is " + alias);
                     resolvable.SetResolver(resolverName, target, out statu, onlyOnce);
                 }
             }
+        }
+
+        public int MakeResolver<InterfaceT>(string alias, string resolverName, ResolveDelegate<InterfaceT> target)
+        {
+            int statu = 0;
+            IResolvable resolvable = ServersHolder.GetResolvable(ref alias, out statu);
+            if (statu == 0)
+            {
+                Tester.Instance.Log(TesterBaseApp.Instance, TesterBaseApp.LOG, resolvable == default, "error: Resolvable is null when MakeResolver, alias is " + alias);
+                resolvable.SetResolver(resolverName, target, out statu, false, true);
+            }
+            return statu;
+        }
+
+        public int RevokeResolver<InterfaceT>(string alias, string resolverName, ResolveDelegate<InterfaceT> target)
+        {
+            int statu = 0;
+            IResolvable resolvable = ServersHolder.GetResolvable(ref alias, out statu);
+            if (statu == 0)
+            {
+                Tester.Instance.Log(TesterBaseApp.Instance, TesterBaseApp.LOG, resolvable == default, "error: Resolvable is null when MakeResolver, alias is " + alias);
+                resolvable.RevokeResolver(resolverName, target);
+            }
+            return statu;
         }
 
         public ResolveDelegate<InterfaceT> Reregister<InterfaceT>(ResolveDelegate<InterfaceT> target, string alias)
@@ -138,9 +162,13 @@ namespace ShipDock.Server
             return result;
         }
 
-        public void Revert()
+        public void Revert(IPoolable target, string alias)
         {
-
+            IResolvable resolvable = ServersHolder.GetResolvable(ref alias, out int resultError);
+            if (resultError == 0)
+            {
+                resolvable.InstanceFactory.Reserve(ref target);
+            }
         }
 
         public void SetServerHolder(IServersHolder servers)

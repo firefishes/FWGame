@@ -1,8 +1,9 @@
 ﻿using ShipDock.Applications;
+using ShipDock.Notices;
 
 namespace FWGame
 {
-    public interface IFWRole : ICommonRole
+    public interface IFWRole : ICommonRole, INotificationSender
     {
     }
 }

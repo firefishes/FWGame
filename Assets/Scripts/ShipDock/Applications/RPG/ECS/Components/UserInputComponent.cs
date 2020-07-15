@@ -33,23 +33,21 @@ namespace ShipDock.Applications
         public override void Execute(int time, ref IShipDockEntitas target)
         {
             base.Execute(time, ref target);
-
+            
             mRoleItem = target as ICommonRole;
+            if (mRoleItem == default)
+            {
+                return;
+            }
             mRoleData = mRoleItem.RoleDataSource;
             mRoleInput = mRoleItem.RoleInput;
             mAnimatorInfo = mRoleItem.RoleAnimatorInfo;
 
-            if (mRoleItem.IsUserControlling && (mRoleInput != default) && (mRoleInput.ShouldGetUserInput))
+            if (mRoleItem.IsUserControlling && (mRoleInput != default) && mRoleInput.ShouldGetUserInput)
             {
                 CheckUserInput();
                 mRoleInput.ShouldGetUserInput = false;
             }
-            if (mRoleInput == default)
-            {
-                return;
-            }
-            IUserInputPhase inputPhase = mRoleInput.GetUserInputPhase();
-            inputPhase?.ExecuteByEntitasComponent();
         }
 
         protected T GetMainServer<T>() where T : MainServer

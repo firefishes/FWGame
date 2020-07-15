@@ -8,7 +8,7 @@ namespace FWGame
         {
             base.CheckUserInput();
 
-            mRoleItem.EnemyMainLockDown = default;
+            mRoleItem.TargetTracking = default;
         }
 
         protected override string[] RelateServerNames { get; } = new string[]

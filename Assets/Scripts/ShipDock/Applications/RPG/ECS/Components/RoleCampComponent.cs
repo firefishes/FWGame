@@ -1,21 +1,17 @@
 ﻿using ShipDock.ECS;
 using ShipDock.Notices;
-using ShipDock.Server;
 using ShipDock.Tools;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ShipDock.Applications
 {
-    public interface IDataServer : IServer
-    {
-
-    }
-
     public abstract class RoleCampComponent : ShipDockComponent
     {
         protected IDataServer mDataServer;
-        private ICommonRole mRoleTarget;
-        private ICommonRole mRoleEntitas;
+        protected ICommonRole mRoleCheckinging;
+        protected ICommonRole mRoleTarget;
         private List<int> mAllRoles;
         private KeyValueList<int, List<int>> mCampRoles;
 
@@ -80,26 +76,85 @@ namespace ShipDock.Applications
         {
             base.Execute(time, ref target);
 
-            mRoleTarget = target as ICommonRole;
+            mRoleCheckinging = target as ICommonRole;
             int id;
             int max = mAllRoles.Count;
             for (int i = 0; i < max; i++)
             {
                 id = mAllRoles[i];
-                mRoleEntitas = GetEntitas(id) as ICommonRole;
-                if ((mRoleEntitas != default) && (mRoleTarget != default))
+                mRoleTarget = GetEntitas(id) as ICommonRole;
+
+                if (WillWalkForRoleEnemyTarget())
                 {
-                    if (!mRoleTarget.IsUserControlling &&
-                        (mRoleTarget.EnemyMainLockDown == default) &&
-                        (mRoleTarget != mRoleEntitas) &&
-                        (mRoleEntitas.Camp != mRoleTarget.Camp))
+                    BeforeAITargetEnemyCheck();
+                    if (WillCheckAIRoleEnemyTarget())
                     {
-                        mRoleTarget.FindngPath = true;
-                        mRoleTarget.EnemyMainLockDown = mRoleEntitas;
+                        mRoleCheckinging.FindingPath = true;
+                        mRoleCheckinging.TargetTracking = mRoleTarget;
+                        AfterAITargetEnemyCheck();
                         break;
                     }
                 }
             }
+            AfterAITargetEnemyCheck();
+        }
+
+        protected abstract void BeforeAITargetEnemyCheck();
+        protected abstract void AfterAITargetEnemyCheck();
+
+        private bool WillCheckAIRoleEnemyTarget()
+        {
+            return ShouldCampCheck() && 
+                    IsAIControllingTarget() &&
+                    CheckTrackView() &&
+                    HasTrackingSet() && 
+                    CheckCamp();
+        }
+
+        private bool WillWalkForRoleEnemyTarget()
+        {
+            return (mRoleTarget != default) && (mRoleCheckinging != default) && (mRoleTarget.ID != mRoleCheckinging.ID);
+        }
+
+        /// <summary>
+        /// 是否忽略敌对阵营目标的检测检测
+        /// </summary>
+        protected virtual bool ShouldCampCheck()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// 是否为人工智能控制的角色
+        /// </summary>
+        protected virtual bool IsAIControllingTarget()
+        {
+            return !mRoleCheckinging.IsUserControlling;
+        }
+
+        /// <summary>
+        /// 是否设置过跟踪目标
+        /// </summary>
+        protected virtual bool HasTrackingSet()
+        {
+            return (mRoleCheckinging.TargetTracking == default) && (mRoleCheckinging != mRoleTarget);
+        }
+
+        /// <summary>
+        /// 检测角色阵营
+        /// </summary>
+        protected virtual bool CheckCamp()
+        {
+            return mRoleTarget.Camp != mRoleCheckinging.Camp;
+        }
+
+        /// <summary>
+        /// 检测目标距离是否在视野内
+        /// </summary>
+        protected virtual bool CheckTrackView()
+        {
+            float distance = Vector3.Distance(mRoleTarget.Position, mRoleCheckinging.Position);
+            return distance <= mRoleCheckinging.TrackViewField;
         }
 
         public ICommonRole RoleCreated { get; private set; }

@@ -29,7 +29,7 @@ namespace FWGame
         private void OnShipDockStart()
         {
             Tester.Instance.SetDefaultTester(FWTester.Instance);
-            Tester.Instance.Init();
+            Tester.Instance.Init(FWTester.Instance);
             Tester.Instance.Log(FWTester.LOG0, "ShipDock start up..");
 
             ShipDockConsts.NOTICE_SCENE_UPDATE_READY.Add(OnSceneUpdateReady);

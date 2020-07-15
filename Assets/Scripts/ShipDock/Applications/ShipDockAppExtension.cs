@@ -26,7 +26,7 @@ public static class ShipDockAppExtension
         ShipDockApp.Instance.Notificater?.Remove(target, handler);
     }
 
-    public static void Dispatch(this int noticeName, INoticeBase<int> notice = default)
+    public static void Broadcast(this int noticeName, INoticeBase<int> notice = default)
     {
         bool defaultNotice = notice == default;
         if (defaultNotice)
@@ -34,16 +34,34 @@ public static class ShipDockAppExtension
             notice = new Notice();
         }
         notice.SetNoticeName(noticeName);
-        ShipDockApp.Instance.Notificater?.SendNotice(notice);
+        ShipDockApp.Instance.Notificater?.Broadcast(notice);
         if(defaultNotice)
         {
             notice.Dispose();
         }
     }
 
+    public static void Dispatch(this INotificationSender target, INoticeBase<int> notice)
+    {
+        notice.NotifcationSender = target;
+        ShipDockApp.Instance.Notificater.Dispatch(notice);
+    }
+
+    public static void Dispatch(this INotificationSender target, int noticeName, INoticeBase<int> notice)
+    {
+        notice.SetNoticeName(noticeName);
+        notice.NotifcationSender = target;
+        ShipDockApp.Instance.Notificater.Dispatch(notice);
+    }
+    
     public static T GetServer<T>(this string serverName) where T : IServer
     {
         return ShipDockApp.Instance.Servers.GetServer<T>(serverName);
+    }
+
+    public static void MakeResolver<I>(this string serverName, string alias, string resolverName, ResolveDelegate<I> handler)
+    {
+        serverName.GetServer<IServer>().MakeResolver(alias, resolverName, handler);
     }
 
     public static void AddToWarehouse(this IData target)

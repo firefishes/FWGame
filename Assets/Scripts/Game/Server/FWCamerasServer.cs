@@ -45,10 +45,11 @@ namespace FWGame
             {
                 case FWConsts.DC_PLAYER_ROLE_CHOOSEN:
                     FWPlayerData playerData = data as FWPlayerData;
-                    IParamNotice<int> paramNotice = Resolve<IParamNotice<int>>("IntParamer");
+                    IParamNotice<int> paramNotice = Resolve<IParamNotice<int>>("Int");
                     paramNotice.ParamValue = FWConsts.NOTICE_PLAYER_ROLE_CHOOSEN;
-                    int msg = playerData.PlayerCurrentRole.SourceID;
-                    msg.Dispatch(paramNotice);
+                    //int msg = playerData.PlayerCurrentRole.ID;//.SourceID;
+                    playerData.PlayerCurrentRole.Dispatch(paramNotice);//TODO 单机版应该不会有这个需求了
+                    //msg.Broadcast(paramNotice);
                     break;
             }
         }

@@ -1,10 +1,17 @@
-﻿using ShipDock.Applications;
+﻿using System;
+using ShipDock.Applications;
+using ShipDock.Notices;
 
 namespace FWGame
 {
     public class FWRole : RoleEntitas, IFWRole
     {
-        protected override int[] ComponentIDs { get; } = new int[]
+
+        public override void CollidingChanged(int colliderID, bool isTrigger, bool isCollided)
+        {
+        }
+
+        protected override int[] ComponentNames { get; } = new int[]
         {
             FWConsts.COMPONENT_ROLE_INPUT,
             FWConsts.COMPONENT_ROLE_CAMP,

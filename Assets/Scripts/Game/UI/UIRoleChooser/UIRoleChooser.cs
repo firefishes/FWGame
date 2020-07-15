@@ -55,7 +55,7 @@ namespace FWGame
             SelectedRoleModel = target;
             SelectedRoleModel.SetUserControll(true);
 
-            FWConsts.SERVER_FW_DATAS.DeliveParam<FWDataServer, ICommonRole>("SetUserFWRole", "SetUserFWRole", OnSetUserFWRole);
+            FWConsts.SERVER_FW_DATAS.DeliveParam<FWDataServer, ICommonRole>("SetUserFWRole", "SetUserFWRole", OnSetUserFWRole, true);
         }
 
         [Resolvable("SetUserFWRole")]
